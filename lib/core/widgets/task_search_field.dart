@@ -8,14 +8,20 @@ class CustomTextField extends StatelessWidget {
     required this.hint,
     required this.prefixIcon,
     this.isDesc = false,
+    this.validator,
+    this.controller,
   });
   final String hint;
   final bool prefixIcon;
   final bool isDesc;
+  final String? Function(String?)? validator;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      controller: controller,
+      validator: validator,
       minLines: isDesc ? 3 : 1,
       maxLines: isDesc ? 5 : 1,
       textAlign: TextAlign.start,

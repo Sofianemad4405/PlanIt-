@@ -1,25 +1,72 @@
-class ToDoModel {
+import 'package:hive/hive.dart';
+import 'package:planitt/core/entities/to_do_entity.dart';
+
+part 'to_do_model.g.dart';
+
+@HiveType(typeId: 0)
+class ToDoModel extends HiveObject {
+  @HiveField(0)
   final String title;
+  @HiveField(1)
   final String? description;
+  @HiveField(2)
   final DateTime createdAt;
+  @HiveField(3)
   final DateTime? dueDate;
+  @HiveField(4)
   final String priority;
+  @HiveField(5)
   final List<String>? subtasks;
+  @HiveField(6)
   final String project;
+  @HiveField(7)
   final bool isToday;
+  @HiveField(8)
   final bool isTomorrow;
+  @HiveField(9)
   final bool isOverdue;
 
   ToDoModel({
     required this.title,
-    required this.description,
+    this.description,
     required this.createdAt,
-    required this.dueDate,
+    this.dueDate,
     this.priority = "Medium",
-    required this.subtasks,
+    this.subtasks,
     this.project = "Inbox",
-    required this.isToday,
-    required this.isTomorrow,
-    required this.isOverdue,
+    this.isToday = false,
+    this.isTomorrow = false,
+    this.isOverdue = false,
   });
+
+  factory ToDoModel.fromEntity(ToDoEntity entity) {
+    return ToDoModel(
+      title: entity.title,
+      description: entity.description,
+      createdAt: entity.createdAt,
+      dueDate: entity.dueDate,
+      priority: entity.priority,
+      subtasks: entity.subtasks,
+      project: entity.project,
+      isToday: entity.isToday,
+      isTomorrow: entity.isTomorrow,
+      isOverdue: entity.isOverdue,
+    );
+  }
+
+  ToDoEntity toEntity() {
+    return ToDoEntity(
+      title: title,
+      description: description,
+      createdAt: createdAt,
+      dueDate: dueDate,
+      priority: priority,
+      subtasks: subtasks,
+      project: project,
+      isToday: isToday,
+      isTomorrow: isTomorrow,
+      isOverdue: isOverdue,
+      key: key, // هنا بنستخدم HiveObject.key
+    );
+  }
 }

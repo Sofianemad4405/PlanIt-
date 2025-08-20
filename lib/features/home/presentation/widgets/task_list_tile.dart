@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_images.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
-import 'package:planitt/l10n/l10n.dart';
 
 class TaskListtile extends StatelessWidget {
-  const TaskListtile({super.key});
+  const TaskListtile({super.key, required this.toDo});
+  final ToDoEntity toDo;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class TaskListtile extends StatelessWidget {
       minTileHeight: AppNumbers.kListTileHeight,
       tileColor: DarkMoodAppColors.kFillColor,
       title: Text(
-        AppLocalizations.of(context)!.helloWorld,
+        toDo.title,
         style: TextStyle(
           color: DarkMoodAppColors.kRedColor,
           fontSize: AppNumbers.kSixteen,
@@ -26,7 +27,6 @@ class TaskListtile extends StatelessWidget {
         children: [
           Container(
             height: AppNumbers.kNineteen,
-            width: AppNumbers.kFourtyThree,
             decoration: ShapeDecoration(
               color: const Color(0x1FF59E0B),
               shape: RoundedRectangleBorder(
@@ -34,12 +34,15 @@ class TaskListtile extends StatelessWidget {
               ),
             ),
             child: Center(
-              child: Text(
-                'Work',
-                style: TextStyle(
-                  color: Color(0xffF59E0B),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  toDo.project,
+                  style: TextStyle(
+                    color: Color(0xffF59E0B),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -48,6 +51,8 @@ class TaskListtile extends StatelessWidget {
           Row(
             children: [
               SvgPicture.asset(
+                height: 15,
+                width: 15,
                 AppImages.kCalendarIcon,
                 colorFilter: ColorFilter.mode(
                   DarkMoodAppColors.kRedColor,
@@ -55,10 +60,17 @@ class TaskListtile extends StatelessWidget {
                 ),
               ),
               Gap(5),
-              Text(
-                "Tomorrow",
-                style: TextStyle(color: DarkMoodAppColors.kRedColor),
-              ),
+              toDo.isToday
+                  ? Text(
+                      toDo.dueDate.toString(),
+                      style: TextStyle(color: DarkMoodAppColors.kRedColor),
+                    )
+                  : toDo.isTomorrow
+                  ? Text(
+                      toDo.dueDate.toString(),
+                      style: TextStyle(color: DarkMoodAppColors.kRedColor),
+                    )
+                  : SizedBox.shrink(),
             ],
           ),
         ],

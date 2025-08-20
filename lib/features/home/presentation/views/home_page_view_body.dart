@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:planitt/core/providers/providers.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
 import 'package:planitt/features/home/presentation/widgets/task_list_tile.dart';
 
-class HomePageViewBody extends StatefulWidget {
+class HomePageViewBody extends ConsumerStatefulWidget {
   const HomePageViewBody({super.key});
 
   @override
-  State<HomePageViewBody> createState() => _HomePageViewState();
+  ConsumerState<HomePageViewBody> createState() => _HomePageViewState();
 }
 
-class _HomePageViewState extends State<HomePageViewBody>
+class _HomePageViewState extends ConsumerState<HomePageViewBody>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
@@ -31,6 +33,8 @@ class _HomePageViewState extends State<HomePageViewBody>
 
   @override
   Widget build(BuildContext context) {
+    final todos = ref.watch(todosControllerProvider);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: CustomScrollView(
@@ -103,7 +107,6 @@ class _HomePageViewState extends State<HomePageViewBody>
                   indicatorPadding: EdgeInsets.zero,
                   labelPadding: EdgeInsets.zero,
                 ),
-                Gap(20),
               ],
             ),
           ),
@@ -114,20 +117,18 @@ class _HomePageViewState extends State<HomePageViewBody>
               physics: const NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: [
-                ListView(
+                ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    TaskListtile(),
-                    Gap(AppNumbers.kEight),
-                    TaskListtile(),
-                    Gap(AppNumbers.kEight),
-                    TaskListtile(),
-                    Gap(AppNumbers.kEight),
-                    TaskListtile(),
-                    Gap(AppNumbers.kEight),
-                  ],
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: TaskListtile(toDo: todos.value![index]),
+                    );
+                  },
+                  itemCount: todos.value?.length ?? 0,
                 ),
                 ListView(
+                  physics: const NeverScrollableScrollPhysics(),
                   children: const [
                     ListTile(title: Text("Task 1")),
                     ListTile(title: Text("Task 2")),
@@ -135,6 +136,7 @@ class _HomePageViewState extends State<HomePageViewBody>
                   ],
                 ),
                 ListView(
+                  physics: const NeverScrollableScrollPhysics(),
                   children: const [
                     ListTile(title: Text("Task 1")),
                     ListTile(title: Text("Task 2")),

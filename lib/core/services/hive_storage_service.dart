@@ -8,23 +8,19 @@ class HiveServiceImpl implements AbstractStorageService {
   }
 
   @override
-  Future<void> add<T>({
-    required String boxName,
-    required String key,
-    required T value,
-  }) async {
+  Future<void> addItem<T>({required String boxName, required T value}) async {
     final box = await Hive.openBox<T>(boxName);
-    await box.put(key, value);
+    await box.add(value);
   }
 
   @override
-  Future<T?> get<T>({required String boxName, required String key}) async {
+  Future<List<T>> getAll<T>({required String boxName}) async {
     final box = await Hive.openBox<T>(boxName);
-    return box.get(key);
+    return box.values.toList();
   }
 
   @override
-  Future<void> delete({required String boxName, required String key}) async {
+  Future<void> delete({required String boxName, required int key}) async {
     final box = await Hive.openBox(boxName);
     await box.delete(key);
   }
@@ -33,5 +29,15 @@ class HiveServiceImpl implements AbstractStorageService {
   Future<void> clear({required String boxName}) async {
     final box = await Hive.openBox(boxName);
     await box.clear();
+  }
+
+  @override
+  Future<void> update<T>({
+    required String boxName,
+    required int key,
+    required T value,
+  }) async {
+    final box = await Hive.openBox<T>(boxName);
+    await box.put(key, value);
   }
 }
