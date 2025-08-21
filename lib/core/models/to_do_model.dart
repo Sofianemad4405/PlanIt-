@@ -26,6 +26,8 @@ class ToDoModel extends HiveObject {
   final bool isTomorrow;
   @HiveField(9)
   final bool isOverdue;
+  @HiveField(10)
+  final int key;
 
   ToDoModel({
     required this.title,
@@ -38,6 +40,7 @@ class ToDoModel extends HiveObject {
     this.isToday = false,
     this.isTomorrow = false,
     this.isOverdue = false,
+    required this.key,
   });
 
   factory ToDoModel.fromEntity(ToDoEntity entity) {
@@ -52,6 +55,7 @@ class ToDoModel extends HiveObject {
       isToday: entity.isToday,
       isTomorrow: entity.isTomorrow,
       isOverdue: entity.isOverdue,
+      key: entity.key,
     );
   }
 
@@ -67,7 +71,7 @@ class ToDoModel extends HiveObject {
       isToday: isToday,
       isTomorrow: isTomorrow,
       isOverdue: isOverdue,
-      key: key, // هنا بنستخدم HiveObject.key
+      key: key,
     );
   }
 }
