@@ -1,10 +1,15 @@
 import 'dart:ui';
 
 class ProjectEntity {
-  final int? id;
+  final String id;
   final String name;
   final Color color;
   final String? icon;
 
-  ProjectEntity({this.id, required this.name, required this.color, this.icon});
+  ProjectEntity({
+    required this.id,
+    required this.name,
+    required this.color,
+    this.icon,
+  });
 }

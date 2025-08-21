@@ -27,14 +27,14 @@ class ToDoModelAdapter extends TypeAdapter<ToDoModel> {
       isToday: fields[7] as bool,
       isTomorrow: fields[8] as bool,
       isOverdue: fields[9] as bool,
-      key: fields[10] as int,
+      key: fields[10] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, ToDoModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)

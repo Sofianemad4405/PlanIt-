@@ -13,11 +13,18 @@ class ProjectModel extends HiveObject {
   final Color color;
   @HiveField(2)
   final String? icon;
+  @HiveField(3)
+  final String id;
 
-  ProjectModel({required this.name, required this.color, this.icon});
+  ProjectModel({
+    required this.name,
+    required this.color,
+    this.icon,
+    required this.id,
+  });
 
   ProjectEntity toEntity() {
-    return ProjectEntity(name: name, color: color, icon: icon);
+    return ProjectEntity(name: name, color: color, icon: icon, id: id);
   }
 
   factory ProjectModel.fromEntity(ProjectEntity entity) {
@@ -25,6 +32,7 @@ class ProjectModel extends HiveObject {
       name: entity.name,
       color: entity.color,
       icon: entity.icon,
+      id: entity.id,
     );
   }
 }

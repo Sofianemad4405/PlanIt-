@@ -11,6 +11,7 @@ import 'package:planitt/core/widgets/save_or_cancel_button.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
 import 'package:planitt/features/home/presentation/widgets/custom_row.dart';
 import 'package:planitt/features/projects/data/models/project_model.dart';
+import 'package:uuid/uuid.dart';
 
 class AddTodoDialog extends StatefulWidget {
   const AddTodoDialog({super.key, required this.onSaved});
@@ -25,6 +26,7 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   DateTime selectedDate = DateTime.now();
   String selectedPriority = "Low";
   ProjectEntity selectedProject = ProjectEntity(
+    id: "",
     name: "Inbox",
     color: const Color(0xff4F46E5),
   );
@@ -251,8 +253,9 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                       isCancel: false,
                       ontap: () {
                         if (_formKey.currentState!.validate()) {
+                          const uuid = Uuid();
                           final toDo = ToDoEntity(
-                            key: DateTime.now().millisecondsSinceEpoch,
+                            key: uuid.v4(),
                             title: titleController.text,
                             description: descriptionController.text,
                             createdAt: DateTime.now(),
@@ -260,6 +263,7 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                             subtasks: [],
                             priority: selectedPriority,
                             project: ProjectEntity(
+                              id: uuid.v4(),
                               name: selectedProject.name,
                               color: selectedProject.color,
                               icon: selectedProject.icon,

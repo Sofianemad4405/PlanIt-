@@ -27,7 +27,7 @@ class ToDoModel extends HiveObject {
   @HiveField(9)
   final bool isOverdue;
   @HiveField(10)
-  final int key;
+  final String key;
 
   ToDoModel({
     required this.title,

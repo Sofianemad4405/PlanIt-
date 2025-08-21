@@ -1,7 +1,7 @@
 import 'package:planitt/core/entities/project_entity.dart';
 
 class ToDoEntity {
-  final int key;
+  final String key;
   final String title;
   final String? description;
   final DateTime createdAt;
