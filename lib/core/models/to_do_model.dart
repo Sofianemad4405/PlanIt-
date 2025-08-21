@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/features/projects/data/models/project_model.dart';
 
 part 'to_do_model.g.dart';
 
@@ -18,7 +19,7 @@ class ToDoModel extends HiveObject {
   @HiveField(5)
   final List<String>? subtasks;
   @HiveField(6)
-  final String project;
+  final ProjectModel project;
   @HiveField(7)
   final bool isToday;
   @HiveField(8)
@@ -33,7 +34,7 @@ class ToDoModel extends HiveObject {
     this.dueDate,
     this.priority = "Medium",
     this.subtasks,
-    this.project = "Inbox",
+    required this.project,
     this.isToday = false,
     this.isTomorrow = false,
     this.isOverdue = false,
@@ -47,7 +48,7 @@ class ToDoModel extends HiveObject {
       dueDate: entity.dueDate,
       priority: entity.priority,
       subtasks: entity.subtasks,
-      project: entity.project,
+      project: ProjectModel.fromEntity(entity.project),
       isToday: entity.isToday,
       isTomorrow: entity.isTomorrow,
       isOverdue: entity.isOverdue,
@@ -62,7 +63,7 @@ class ToDoModel extends HiveObject {
       dueDate: dueDate,
       priority: priority,
       subtasks: subtasks,
-      project: project,
+      project: project.toEntity(),
       isToday: isToday,
       isTomorrow: isTomorrow,
       isOverdue: isOverdue,

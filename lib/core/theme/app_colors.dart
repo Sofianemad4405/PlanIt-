@@ -22,6 +22,7 @@ class DarkMoodAppColors {
   static const Color kProjectIconColor6 = Color(0xFFEC4899);
   static const Color kProjectIconColor7 = Color(0xFF06B6D4);
   static const Color kProjectIconColor8 = Color(0xFFF97316);
+  static const Color kProjectIconColor9 = Color(0xFF9CA3AF);
 
   //task priority colors
   static const Color kHighPriorityColor = Color(0xFFFB923C);

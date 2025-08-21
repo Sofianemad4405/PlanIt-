@@ -24,7 +24,7 @@ class _RootState extends State<Root> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: CustomAppBar(),
+      appBar: const CustomAppBar(),
       body: _currentIndex == 0
           ? const HomePageViewBody()
           : _currentIndex == 1
@@ -44,7 +44,6 @@ class _RootState extends State<Root> {
       ),
       floatingActionButton: Consumer(
         builder: (context, ref, child) {
-          final todos = ref.watch(todosControllerProvider);
           return FloatingActionButton(
             shape: const CircleBorder(),
             onPressed: () {
@@ -54,8 +53,7 @@ class _RootState extends State<Root> {
                 builder: (context) {
                   return AddTodoDialog(
                     onSaved: (todo) {
-                      todos.value?.add(todo);
-                      setState(() {});
+                      ref.read(todosControllerProvider.notifier).addTodo(todo);
                       context.pop();
                     },
                   );

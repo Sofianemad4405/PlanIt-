@@ -1,24 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:planitt/core/converters/date_convertors.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_images.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
 
 class TaskListtile extends StatelessWidget {
-  const TaskListtile({super.key, required this.toDo});
+  const TaskListtile({
+    super.key,
+    required this.toDo,
+    required this.onDelete,
+    required this.onTileTab,
+  });
   final ToDoEntity toDo;
+  final VoidCallback onDelete;
+  final VoidCallback onTileTab;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: onTileTab,
       minTileHeight: AppNumbers.kListTileHeight,
       tileColor: DarkMoodAppColors.kFillColor,
       title: Text(
         toDo.title,
         style: TextStyle(
-          color: DarkMoodAppColors.kRedColor,
+          color: toDo.isToday
+              ? DarkMoodAppColors.kRedColor
+              : toDo.isTomorrow
+              ? DarkMoodAppColors.kRedColor
+              : DarkMoodAppColors.kWhiteColor,
           fontSize: AppNumbers.kSixteen,
           fontWeight: FontWeight.w500,
         ),
@@ -28,7 +41,13 @@ class TaskListtile extends StatelessWidget {
           Container(
             height: AppNumbers.kNineteen,
             decoration: ShapeDecoration(
-              color: const Color(0x1FF59E0B),
+              color: toDo.project.name == "Work"
+                  ? const Color(0xffF59E0B).withValues(alpha: 0.125)
+                  : toDo.project.name == "Personal"
+                  ? const Color(0xff10B981).withValues(alpha: 0.125)
+                  : toDo.project.name == "Inbox"
+                  ? const Color(0xff4F46E5).withValues(alpha: 0.125)
+                  : toDo.project.color.withValues(alpha: 0.125),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
@@ -37,9 +56,15 @@ class TaskListtile extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  toDo.project,
+                  toDo.project.name,
                   style: TextStyle(
-                    color: Color(0xffF59E0B),
+                    color: toDo.project.name == "Inbox"
+                        ? DarkMoodAppColors.kProjectIconColor1
+                        : toDo.project.name == "Personal"
+                        ? DarkMoodAppColors.kProjectIconColor2
+                        : toDo.project.name == "Work"
+                        ? DarkMoodAppColors.kProjectIconColor3
+                        : toDo.project.color,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -47,7 +72,7 @@ class TaskListtile extends StatelessWidget {
               ),
             ),
           ),
-          Gap(5),
+          const Gap(5),
           Row(
             children: [
               SvgPicture.asset(
@@ -55,34 +80,54 @@ class TaskListtile extends StatelessWidget {
                 width: 15,
                 AppImages.kCalendarIcon,
                 colorFilter: ColorFilter.mode(
-                  DarkMoodAppColors.kRedColor,
+                  toDo.isToday || toDo.isTomorrow
+                      ? DarkMoodAppColors.kRedColor
+                      : DarkMoodAppColors.kDateColor,
                   BlendMode.srcIn,
                 ),
               ),
-              Gap(5),
+              const Gap(5),
               toDo.isToday
-                  ? Text(
-                      toDo.dueDate.toString(),
+                  ? const Text(
+                      "Today",
                       style: TextStyle(color: DarkMoodAppColors.kRedColor),
                     )
                   : toDo.isTomorrow
-                  ? Text(
-                      toDo.dueDate.toString(),
+                  ? const Text(
+                      "Tomorrow",
                       style: TextStyle(color: DarkMoodAppColors.kRedColor),
                     )
-                  : SizedBox.shrink(),
+                  : Text(
+                      "${dateToMonth(toDo.dueDate!.month)} ${toDo.dueDate!.day}",
+                      style: const TextStyle(
+                        color: DarkMoodAppColors.kDateColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
             ],
           ),
         ],
       ),
-      leading: SvgPicture.asset(AppImages.listTileLeading),
+      leading: GestureDetector(
+        onTap: onDelete,
+        child: SvgPicture.asset(AppImages.listTileLeading),
+      ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       trailing: Container(
         height: AppNumbers.kTwelve,
         width: AppNumbers.kTwelve,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: DarkMoodAppColors.kRedColor,
+          color: toDo.priority == "Low"
+              ? DarkMoodAppColors.kLowPriorityColor
+              : toDo.priority == "Medium"
+              ? DarkMoodAppColors.kMediumPriorityColor
+              : toDo.priority == "High"
+              ? DarkMoodAppColors.kHighPriorityColor
+              : toDo.priority == "Urgent"
+              ? DarkMoodAppColors.kUrgentPriorityColor
+              : DarkMoodAppColors.kProjectIconColor9,
         ),
       ),
     );
