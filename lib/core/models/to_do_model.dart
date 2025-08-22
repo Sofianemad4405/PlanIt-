@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/core/models/subtask_model.dart';
 import 'package:planitt/features/projects/data/models/project_model.dart';
 
 part 'to_do_model.g.dart';
@@ -17,7 +18,7 @@ class ToDoModel extends HiveObject {
   @HiveField(4)
   final String priority;
   @HiveField(5)
-  final List<String>? subtasks;
+  final List<SubtaskModel>? subtasks;
   @HiveField(6)
   final ProjectModel project;
   @HiveField(7)
@@ -28,6 +29,8 @@ class ToDoModel extends HiveObject {
   final bool isOverdue;
   @HiveField(10)
   final String key;
+  @HiveField(11)
+  final bool isFinished;
 
   ToDoModel({
     required this.title,
@@ -41,6 +44,7 @@ class ToDoModel extends HiveObject {
     this.isTomorrow = false,
     this.isOverdue = false,
     required this.key,
+    this.isFinished = false,
   });
 
   factory ToDoModel.fromEntity(ToDoEntity entity) {
@@ -50,12 +54,15 @@ class ToDoModel extends HiveObject {
       createdAt: entity.createdAt,
       dueDate: entity.dueDate,
       priority: entity.priority,
-      subtasks: entity.subtasks,
+      subtasks: entity.subtasks
+          ?.map((e) => SubtaskModel.fromEntity(e))
+          .toList(),
       project: ProjectModel.fromEntity(entity.project),
       isToday: entity.isToday,
       isTomorrow: entity.isTomorrow,
       isOverdue: entity.isOverdue,
       key: entity.key,
+      isFinished: entity.isFinished,
     );
   }
 
@@ -66,7 +73,7 @@ class ToDoModel extends HiveObject {
       createdAt: createdAt,
       dueDate: dueDate,
       priority: priority,
-      subtasks: subtasks,
+      subtasks: subtasks?.map((e) => e.toEntity()).toList(),
       project: project.toEntity(),
       isToday: isToday,
       isTomorrow: isTomorrow,

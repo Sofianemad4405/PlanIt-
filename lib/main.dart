@@ -9,7 +9,6 @@ Future<void> main() async {
 
   // init hive (via your service)
   await HiveServiceImpl().init();
-
   await seedDefaultProjects();
   runApp(const ProviderScope(child: MyApp()));
 }

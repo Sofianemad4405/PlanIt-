@@ -29,8 +29,6 @@ class TaskListtile extends StatelessWidget {
         style: TextStyle(
           color: toDo.isToday
               ? DarkMoodAppColors.kRedColor
-              : toDo.isTomorrow
-              ? DarkMoodAppColors.kRedColor
               : DarkMoodAppColors.kWhiteColor,
           fontSize: AppNumbers.kSixteen,
           fontWeight: FontWeight.w500,
@@ -47,7 +45,7 @@ class TaskListtile extends StatelessWidget {
                   ? const Color(0xff10B981).withValues(alpha: 0.125)
                   : toDo.project.name == "Inbox"
                   ? const Color(0xff4F46E5).withValues(alpha: 0.125)
-                  : toDo.project.color.withValues(alpha: 0.125),
+                  : toDo.project.color.color.withValues(alpha: 0.125),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
@@ -64,7 +62,7 @@ class TaskListtile extends StatelessWidget {
                         ? DarkMoodAppColors.kProjectIconColor2
                         : toDo.project.name == "Work"
                         ? DarkMoodAppColors.kProjectIconColor3
-                        : toDo.project.color,
+                        : toDo.project.color.color,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -80,7 +78,7 @@ class TaskListtile extends StatelessWidget {
                 width: 15,
                 AppImages.kCalendarIcon,
                 colorFilter: ColorFilter.mode(
-                  toDo.isToday || toDo.isTomorrow
+                  toDo.isToday
                       ? DarkMoodAppColors.kRedColor
                       : DarkMoodAppColors.kDateColor,
                   BlendMode.srcIn,
@@ -95,7 +93,7 @@ class TaskListtile extends StatelessWidget {
                   : toDo.isTomorrow
                   ? const Text(
                       "Tomorrow",
-                      style: TextStyle(color: DarkMoodAppColors.kRedColor),
+                      style: TextStyle(color: DarkMoodAppColors.kDateColor),
                     )
                   : Text(
                       "${dateToMonth(toDo.dueDate!.month)} ${toDo.dueDate!.day}",

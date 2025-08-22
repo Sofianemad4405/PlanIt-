@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:planitt/core/providers/providers.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
+import 'package:planitt/features/home/presentation/widgets/no_tasks.dart';
 import 'package:planitt/features/home/presentation/widgets/todos_list_view.dart';
 
 class HomePageViewBody extends ConsumerStatefulWidget {
@@ -52,10 +53,10 @@ class _HomePageViewState extends ConsumerState<HomePageViewBody>
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    "Wednesday, August 13",
-                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                      color: DarkMoodAppColors.kDateColor,
-                      fontWeight: FontWeight.normal,
+                    DateFormat('EEEE, MMMM d').format(DateTime.now()),
+                    style: const TextStyle(
+                      color: DarkMoodAppColors.kUnSelectedItemColor,
+                      fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),
                   ),
@@ -123,12 +124,15 @@ class _HomePageViewState extends ConsumerState<HomePageViewBody>
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: TabBarView(
+          physics: const NeverScrollableScrollPhysics(),
           controller: _tabController,
           children: [
             todos.when(
               data: (list) {
                 final todayTodos = list.where((todo) => todo.isToday).toList();
-                return TodosListView(todos: todayTodos);
+                return todayTodos.isEmpty
+                    ? const Center(child: NoTasks(text: "No tasks for today"))
+                    : TodosListView(todos: todayTodos);
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text(e.toString())),
@@ -136,15 +140,21 @@ class _HomePageViewState extends ConsumerState<HomePageViewBody>
             todos.when(
               data: (list) {
                 final upcomingTodos = list
-                    .where((todo) => !todo.isToday && !todo.isTomorrow)
+                    .where((todo) => !todo.isToday)
                     .toList();
-                return TodosListView(todos: upcomingTodos);
+                return upcomingTodos.isEmpty
+                    ? const NoTasks(text: "No Upcoming Tasks")
+                    : TodosListView(todos: upcomingTodos);
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text(e.toString())),
             ),
             todos.when(
-              data: (list) => TodosListView(todos: list),
+              data: (list) {
+                return list.isEmpty
+                    ? const NoTasks(text: "No tasks added yet")
+                    : TodosListView(todos: list);
+              },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text(e.toString())),
             ),

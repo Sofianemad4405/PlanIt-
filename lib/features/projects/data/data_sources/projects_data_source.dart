@@ -27,6 +27,6 @@ class ProjectsDataSourceImpl implements ProjectsDataSource {
 
   @override
   Future<void> deleteProject(ProjectEntity project) async {
-    await storageService.delete(boxName: projectsBoxName, key: project.id!);
+    await storageService.delete(boxName: projectsBoxName, key: project.id);
   }
 }

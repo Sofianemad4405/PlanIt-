@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:hive/hive.dart';
+import 'package:planitt/core/adapters/color_model.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 
 part 'project_model.g.dart';
@@ -10,7 +9,7 @@ class ProjectModel extends HiveObject {
   @HiveField(0)
   final String name;
   @HiveField(1)
-  final Color color;
+  final ColorModel color;
   @HiveField(2)
   final String? icon;
   @HiveField(3)

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:planitt/core/adapters/color_model.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
@@ -28,7 +29,7 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   ProjectEntity selectedProject = ProjectEntity(
     id: "",
     name: "Inbox",
-    color: const Color(0xff4F46E5),
+    color: ColorModel(0xff4F46E5),
   );
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();

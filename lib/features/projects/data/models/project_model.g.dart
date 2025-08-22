@@ -18,7 +18,7 @@ class ProjectModelAdapter extends TypeAdapter<ProjectModel> {
     };
     return ProjectModel(
       name: fields[0] as String,
-      color: fields[1] as Color,
+      color: fields[1] as ColorModel,
       icon: fields[2] as String?,
       id: fields[3] as String,
     );

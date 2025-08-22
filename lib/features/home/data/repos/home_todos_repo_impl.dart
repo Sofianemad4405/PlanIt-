@@ -39,7 +39,6 @@ class HomeTodosRepoImpl implements HomeTodosRepo {
   @override
   Future<void> deleteTodo(ToDoEntity toDo) async {
     await homeDataSource.deleteTodo(ToDoModel.fromEntity(toDo));
-    throw UnimplementedError();
   }
 
   @override

@@ -70,14 +70,14 @@ class HomeDataSourceImpl implements HomeDataSource {
 
   @override
   Future<void> deleteTodo(ToDoModel toDo) async {
-    await storageService.delete(boxName: todosBoxName, key: toDo.key!);
+    await storageService.delete(boxName: todosBoxName, key: toDo.key);
   }
 
   @override
   Future<void> updateTodo(ToDoModel toDo) async {
     await storageService.update(
       boxName: todosBoxName,
-      key: toDo.key!,
+      key: toDo.key,
       value: toDo,
     );
   }

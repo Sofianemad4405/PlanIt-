@@ -22,19 +22,20 @@ class ToDoModelAdapter extends TypeAdapter<ToDoModel> {
       createdAt: fields[2] as DateTime,
       dueDate: fields[3] as DateTime?,
       priority: fields[4] as String,
-      subtasks: (fields[5] as List?)?.cast<String>(),
+      subtasks: (fields[5] as List?)?.cast<SubtaskModel>(),
       project: fields[6] as ProjectModel,
       isToday: fields[7] as bool,
       isTomorrow: fields[8] as bool,
       isOverdue: fields[9] as bool,
       key: fields[10] as String,
+      isFinished: fields[11] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ToDoModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class ToDoModelAdapter extends TypeAdapter<ToDoModel> {
       ..writeByte(9)
       ..write(obj.isOverdue)
       ..writeByte(10)
-      ..write(obj.key);
+      ..write(obj.key)
+      ..writeByte(11)
+      ..write(obj.isFinished);
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/features/home/domain/repos/home_todos_repo.dart';
@@ -63,6 +65,7 @@ class HomeTodoNotifier extends StateNotifier<AsyncValue<List<ToDoEntity>>> {
   Future<void> deleteTodo(ToDoEntity todo) async {
     try {
       await repository.deleteTodo(todo);
+      log("deleted todo");
       getAllTodos();
     } catch (e, st) {
       state = AsyncValue.error(e, st);

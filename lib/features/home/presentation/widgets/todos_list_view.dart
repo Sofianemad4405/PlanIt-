@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/providers/providers.dart';
+import 'package:planitt/features/home/presentation/widgets/edit_note_dialog.dart';
 import 'package:planitt/features/home/presentation/widgets/task_list_tile.dart';
 
 class TodosListView extends ConsumerWidget {
@@ -11,7 +12,6 @@ class TodosListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todos = ref.watch(todosControllerProvider);
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -19,17 +19,24 @@ class TodosListView extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: TaskListtile(
-            toDo: todos.value![index],
+            toDo: todos[index],
             onDelete: () {
               ref
                   .read(todosControllerProvider.notifier)
-                  .deleteTodo(todos.value![index]);
+                  .deleteTodo(todos[index]);
             },
-            onTileTab: () {},
+            onTileTab: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return EditNoteDialog(toDo: todos[index]);
+                },
+              );
+            },
           ),
         );
       },
-      itemCount: todos.value?.length ?? 0,
+      itemCount: todos.length,
     );
   }
 }
