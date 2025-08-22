@@ -52,9 +52,9 @@ class HomeTodoNotifier extends StateNotifier<AsyncValue<List<ToDoEntity>>> {
   }
 
   /// Update Todo
-  Future<void> updateTodo(ToDoEntity todo) async {
+  Future<void> updateTodo(String key, ToDoEntity todo) async {
     try {
-      await repository.updateTodo(todo);
+      await repository.updateTodo(key, todo);
       getAllTodos();
     } catch (e, st) {
       state = AsyncValue.error(e, st);

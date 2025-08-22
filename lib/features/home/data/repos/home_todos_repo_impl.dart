@@ -42,7 +42,7 @@ class HomeTodosRepoImpl implements HomeTodosRepo {
   }
 
   @override
-  Future<void> updateTodo(ToDoEntity toDo) async {
-    await homeDataSource.updateTodo(ToDoModel.fromEntity(toDo));
+  Future<void> updateTodo(String key, ToDoEntity toDo) async {
+    await homeDataSource.updateTodo(key, ToDoModel.fromEntity(toDo));
   }
 }

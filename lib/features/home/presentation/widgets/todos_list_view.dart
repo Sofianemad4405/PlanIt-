@@ -12,31 +12,34 @@ class TodosListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: TaskListtile(
-            toDo: todos[index],
-            onDelete: () {
-              ref
-                  .read(todosControllerProvider.notifier)
-                  .deleteTodo(todos[index]);
-            },
-            onTileTab: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return EditNoteDialog(toDo: todos[index]);
-                },
-              );
-            },
-          ),
-        );
-      },
-      itemCount: todos.length,
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: TaskListtile(
+              toDo: todos[index],
+              onDelete: () {
+                ref
+                    .read(todosControllerProvider.notifier)
+                    .deleteTodo(todos[index]);
+              },
+              onTileTab: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return EditNoteDialog(toDo: todos[index]);
+                  },
+                );
+              },
+            ),
+          );
+        },
+        itemCount: todos.length,
+      ),
     );
   }
 }

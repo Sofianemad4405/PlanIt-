@@ -9,7 +9,7 @@ abstract class HomeDataSource {
   Future<List<ToDoModel>> searchTodos(String query);
   Future<void> addTodo(ToDoModel toDo);
   Future<void> deleteTodo(ToDoModel toDo);
-  Future<void> updateTodo(ToDoModel toDo);
+  Future<void> updateTodo(String key, ToDoModel toDo);
 }
 
 class HomeDataSourceImpl implements HomeDataSource {
@@ -74,7 +74,7 @@ class HomeDataSourceImpl implements HomeDataSource {
   }
 
   @override
-  Future<void> updateTodo(ToDoModel toDo) async {
+  Future<void> updateTodo(String key, ToDoModel toDo) async {
     await storageService.update(
       boxName: todosBoxName,
       key: toDo.key,

@@ -6,7 +6,7 @@ class UpdateTodo {
 
   UpdateTodo(this.homeTodosRepo);
 
-  Future<void> call(ToDoEntity toDo) async {
-    await homeTodosRepo.updateTodo(toDo);
+  Future<void> call(String key, ToDoEntity toDo) async {
+    await homeTodosRepo.updateTodo(key, toDo);
   }
 }
