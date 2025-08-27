@@ -1,5 +1,5 @@
 const List<String> priorities = ["Low", "Medium", "High", "Urgent"];
-const List<String> projects = [
+const List<String> projectsIcons = [
   "📁",
   "💼",
   "🏠",
@@ -14,3 +14,4 @@ const List<String> projects = [
 ];
 const String todosBoxName = "todos";
 const String projectsBoxName = "projects";
+const String subtasksBoxName = "subtasks";

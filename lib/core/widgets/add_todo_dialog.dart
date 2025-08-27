@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:planitt/core/adapters/color_model.dart';
 import 'package:planitt/core/entities/project_entity.dart';
@@ -11,7 +13,7 @@ import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/core/widgets/save_or_cancel_button.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
 import 'package:planitt/features/home/presentation/widgets/custom_row.dart';
-import 'package:planitt/features/projects/data/models/project_model.dart';
+import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 import 'package:uuid/uuid.dart';
 
 class AddTodoDialog extends StatefulWidget {
@@ -26,11 +28,7 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   final _formKey = GlobalKey<FormState>();
   DateTime selectedDate = DateTime.now();
   String selectedPriority = "Low";
-  ProjectEntity selectedProject = ProjectEntity(
-    id: "",
-    name: "Inbox",
-    color: ColorModel(0xff4F46E5),
-  );
+  late ProjectEntity selectedProject;
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   List<ProjectEntity> projects = [];
@@ -41,21 +39,8 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   }
 
   Future<void> _loadProjects() async {
-    final box = await Hive.openBox<ProjectModel>(projectsBoxName);
-    setState(() {
-      projects = box.values.map((model) => model.toEntity()).toList();
-      if (projects.isNotEmpty) {
-        // Ensure the selected value references an instance from items
-        final match = projects.firstWhere(
-          (p) =>
-              p.name == selectedProject.name &&
-              p.color == selectedProject.color &&
-              p.icon == selectedProject.icon,
-          orElse: () => projects.first,
-        );
-        selectedProject = match;
-      }
-    });
+    selectedProject = context.read<ProjectsCubit>().projects.first;
+    projects = context.read<ProjectsCubit>().projects;
   }
 
   @override
@@ -258,17 +243,14 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                           final toDo = ToDoEntity(
                             key: uuid.v4(),
                             title: titleController.text,
-                            description: descriptionController.text,
+                            description: descriptionController.text.isEmpty
+                                ? null
+                                : descriptionController.text,
                             createdAt: DateTime.now(),
                             dueDate: selectedDate,
                             subtasks: [],
                             priority: selectedPriority,
-                            project: ProjectEntity(
-                              id: uuid.v4(),
-                              name: selectedProject.name,
-                              color: selectedProject.color,
-                              icon: selectedProject.icon,
-                            ),
+                            project: selectedProject,
                             isToday: isSameDay(selectedDate, DateTime.now()),
                             isTomorrow: isSameDay(
                               selectedDate,

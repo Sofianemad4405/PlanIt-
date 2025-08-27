@@ -1,4 +1,5 @@
 import 'package:hive_flutter/adapters.dart';
+import 'package:planitt/core/models/subtask_model.dart';
 import 'package:planitt/core/models/to_do_model.dart';
 import 'package:planitt/core/services/abstract_storage_service.dart';
 import 'package:planitt/core/utils/constants.dart';
@@ -14,40 +15,50 @@ class HiveServiceImpl implements AbstractStorageService {
     Hive.registerAdapter(ToDoModelAdapter());
     Hive.registerAdapter(ProjectModelAdapter());
     Hive.registerAdapter(ColorModelAdapter());
+    Hive.registerAdapter(SubtaskModelAdapter());
 
     await Hive.openBox<ToDoModel>(todosBoxName);
     await Hive.openBox<ProjectModel>(projectsBoxName);
+    await Hive.openBox<SubtaskModel>(subtasksBoxName);
+  }
+
+  Box<T> _getBox<T>(String boxName) {
+    return Hive.box<T>(boxName);
   }
 
   @override
   Future<void> addItem<T>({required String boxName, required T value}) async {
-    // If adding ToDoModel, prefer using its string key as the Hive key for consistency
+    final box = _getBox<T>(boxName);
+
     if (value is ToDoModel) {
-      final box = Hive.box<ToDoModel>(boxName);
-      await box.put(value.key, value);
+      // نستخدم الـ key كـ hiveKey عشان يبقى سهل نعمل update/delete بعدين
+      await (box as Box<ToDoModel>).put(value.key, value);
+    } else if (value is ProjectModel) {
+      await (box as Box<ProjectModel>).put(value.id, value);
+    } else if (value is SubtaskModel) {
+      await (box as Box<SubtaskModel>).put(value.key, value);
     } else {
-      final box = Hive.box<T>(boxName);
       await box.add(value);
     }
   }
 
   @override
   Future<List<T>> getAll<T>({required String boxName}) async {
-    final box = Hive.box<T>(boxName);
-    return box.values.toList();
+    final box = _getBox<T>(boxName);
+    return box.values.cast<T>().toList();
   }
 
   @override
   Future<void> delete({required String boxName, required String key}) async {
-    // Locate the Hive entry by matching the model.key and delete by the actual Hive key
-    final box = Hive.box<ToDoModel>(boxName);
-    final map = box.toMap();
-    for (final entry in map.entries) {
-      final model = entry.value;
-      if (model.key == key) {
-        await box.delete(entry.key);
-        break;
-      }
+    if (boxName == projectsBoxName) {
+      final box = Hive.box<ProjectModel>(boxName);
+      await box.delete(key);
+    } else if (boxName == todosBoxName) {
+      final box = Hive.box<ToDoModel>(boxName);
+      await box.delete(key);
+    } else if (boxName == subtasksBoxName) {
+      final box = Hive.box<SubtaskModel>(boxName);
+      await box.delete(key);
     }
   }
 
@@ -63,20 +74,15 @@ class HiveServiceImpl implements AbstractStorageService {
     required String key,
     required T value,
   }) async {
-    // If updating ToDoModel, find the existing Hive key (may be int or string)
+    final box = _getBox<T>(boxName);
+
     if (value is ToDoModel) {
-      final box = Hive.box<ToDoModel>(boxName);
-      final map = box.toMap();
-      dynamic hiveKey = key; // fallback
-      for (final entry in map.entries) {
-        if (entry.value.key == key) {
-          hiveKey = entry.key;
-          break;
-        }
-      }
-      await box.put(hiveKey, value);
+      await (box as Box<ToDoModel>).put(key, value);
+    } else if (value is ProjectModel) {
+      await (box as Box<ProjectModel>).put(key, value);
+    } else if (value is SubtaskModel) {
+      await (box as Box<SubtaskModel>).put(key, value);
     } else {
-      final box = Hive.box<T>(boxName);
       await box.put(key, value);
     }
   }

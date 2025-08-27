@@ -1,3 +1,4 @@
+import 'package:planitt/core/models/subtask_model.dart';
 import 'package:planitt/core/models/to_do_model.dart';
 import 'package:planitt/core/services/abstract_storage_service.dart';
 import 'package:planitt/core/utils/constants.dart';
@@ -6,10 +7,18 @@ abstract class HomeDataSource {
   Future<List<ToDoModel>> getTodayTodos();
   Future<List<ToDoModel>> getUpcomingTodos();
   Future<List<ToDoModel>> getAllTodos();
+  Future<List<ToDoModel>> getTaskByProjectId(String projectId);
   Future<List<ToDoModel>> searchTodos(String query);
   Future<void> addTodo(ToDoModel toDo);
   Future<void> deleteTodo(ToDoModel toDo);
   Future<void> updateTodo(String key, ToDoModel toDo);
+  Future<void> addSubtask(ToDoModel toDo, SubtaskModel subtask);
+  Future<void> deleteSubtask(String todoKey, int subtaskIndex);
+  Future<void> updateSubtask(
+    String todoKey,
+    int subtaskIndex,
+    bool isCompleted,
+  );
 }
 
 class HomeDataSourceImpl implements HomeDataSource {
@@ -80,5 +89,34 @@ class HomeDataSourceImpl implements HomeDataSource {
       key: toDo.key,
       value: toDo,
     );
+  }
+
+  @override
+  Future<void> addSubtask(ToDoModel toDo, SubtaskModel subtask) async {
+    await storageService.addItem(boxName: subtasksBoxName, value: subtask);
+  }
+
+  @override
+  Future<void> deleteSubtask(String todoKey, int subtaskIndex) async {
+    await storageService.delete(boxName: subtasksBoxName, key: todoKey);
+  }
+
+  @override
+  Future<void> updateSubtask(
+    String todoKey,
+    int subtaskIndex,
+    bool isCompleted,
+  ) async {
+    await storageService.update(
+      boxName: subtasksBoxName,
+      key: todoKey,
+      value: isCompleted,
+    );
+  }
+
+  @override
+  Future<List<ToDoModel>> getTaskByProjectId(String projectId) async {
+    final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
+    return todos.where((t) => t.project.id == projectId).toList();
   }
 }

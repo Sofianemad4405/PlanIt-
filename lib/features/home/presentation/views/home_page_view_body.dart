@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:planitt/core/providers/providers.dart';
+import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
+import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/home/presentation/widgets/no_tasks.dart';
+import 'package:planitt/features/home/presentation/widgets/todo_read_dialog.dart';
 import 'package:planitt/features/home/presentation/widgets/todos_list_view.dart';
 
-class HomePageViewBody extends ConsumerStatefulWidget {
+class HomePageViewBody extends StatefulWidget {
   const HomePageViewBody({super.key});
 
   @override
-  ConsumerState<HomePageViewBody> createState() => _HomePageViewState();
+  State<HomePageViewBody> createState() => _HomePageViewState();
 }
 
-class _HomePageViewState extends ConsumerState<HomePageViewBody>
+class _HomePageViewState extends State<HomePageViewBody>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  bool isSearching = false;
 
   @override
   void initState() {
@@ -34,8 +37,6 @@ class _HomePageViewState extends ConsumerState<HomePageViewBody>
 
   @override
   Widget build(BuildContext context) {
-    final todos = ref.watch(todosControllerProvider);
-
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
@@ -123,42 +124,71 @@ class _HomePageViewState extends ConsumerState<HomePageViewBody>
       },
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: TabBarView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: _tabController,
-          children: [
-            todos.when(
-              data: (list) {
-                final todayTodos = list.where((todo) => todo.isToday).toList();
-                return todayTodos.isEmpty
-                    ? const Center(child: NoTasks(text: "No tasks for today"))
-                    : TodosListView(todos: todayTodos);
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text(e.toString())),
-            ),
-            todos.when(
-              data: (list) {
-                final upcomingTodos = list
-                    .where((todo) => !todo.isToday)
-                    .toList();
-                return upcomingTodos.isEmpty
-                    ? const NoTasks(text: "No Upcoming Tasks")
-                    : TodosListView(todos: upcomingTodos);
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text(e.toString())),
-            ),
-            todos.when(
-              data: (list) {
-                return list.isEmpty
+        child: BlocConsumer<TodosCubit, TodosState>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            final List<ToDoEntity> todayTodos = state is TodosSuccessHome
+                ? state.todos.where((todo) => todo.isToday).toList()
+                : [];
+            final List<ToDoEntity> upcomingTodos = state is TodosSuccessHome
+                ? state.todos.where((todo) => !todo.isToday).toList()
+                : [];
+            final List<ToDoEntity> allTodos = state is TodosSuccessHome
+                ? state.todos
+                : [];
+            return TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: _tabController,
+              children: [
+                todayTodos.isEmpty
+                    ? const NoTasks(text: "No tasks for today")
+                    : TodosListView(
+                        todos: todayTodos,
+                        onDelete: (todo) {
+                          context.read<TodosCubit>().deleteTodo(todo);
+                        },
+                        onTileTab: (todo) {
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                TodoReadDialog(toDoKey: todo.key),
+                          );
+                        },
+                      ),
+                upcomingTodos.isEmpty
+                    ? const NoTasks(text: "No upcoming tasks")
+                    : TodosListView(
+                        todos: upcomingTodos,
+                        onDelete: (todo) {
+                          context.read<TodosCubit>().deleteTodo(todo);
+                        },
+                        onTileTab: (todo) {
+                          // context.read<HomeCubit>().viewTodo(todo);
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                TodoReadDialog(toDoKey: todo.key),
+                          );
+                        },
+                      ),
+                allTodos.isEmpty
                     ? const NoTasks(text: "No tasks added yet")
-                    : TodosListView(todos: list);
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text(e.toString())),
-            ),
-          ],
+                    : TodosListView(
+                        todos: allTodos,
+                        onDelete: (todo) {
+                          context.read<TodosCubit>().deleteTodo(todo);
+                        },
+                        onTileTab: (todo) {
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                TodoReadDialog(toDoKey: todo.key),
+                          );
+                        },
+                      ),
+              ],
+            );
+          },
         ),
       ),
     );

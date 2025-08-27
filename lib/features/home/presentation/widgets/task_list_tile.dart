@@ -21,7 +21,7 @@ class TaskListtile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: onTileTab,
+      onTap: () => onTileTab(),
       minTileHeight: AppNumbers.kListTileHeight,
       tileColor: DarkMoodAppColors.kFillColor,
       title: Text(
@@ -108,7 +108,7 @@ class TaskListtile extends StatelessWidget {
         ],
       ),
       leading: GestureDetector(
-        onTap: onDelete,
+        onTap: () => onDelete(),
         child: SvgPicture.asset(AppImages.listTileLeading),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

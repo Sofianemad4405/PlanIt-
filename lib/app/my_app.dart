@@ -1,10 +1,16 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:planitt/core/services/get_it_service.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/theme/dark_theme.dart';
 import 'package:planitt/core/theme/light_theme.dart';
+import 'package:planitt/features/home/domain/repos/home_todos_repo.dart';
+import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
+import 'package:planitt/features/projects/domain/repos/projects_repo.dart';
+import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 import 'package:planitt/l10n/l10n.dart';
 import 'package:planitt/root/root.dart';
 
@@ -66,7 +72,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: darkTheme,
       themeMode: ThemeMode.dark,
       theme: lightTheme,
-      home: Root(),
+      home: const Root(),
     );
   }
 }

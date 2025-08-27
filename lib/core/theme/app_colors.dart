@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:planitt/core/adapters/color_model.dart';
+
 class DarkMoodAppColors {
   static const Color kRedColor = Color(0xFFEF4444); //also for
   static const Color kWhiteColor = Color(0xFFFFFFFF);
@@ -23,6 +25,18 @@ class DarkMoodAppColors {
   static const Color kProjectIconColor7 = Color(0xFF06B6D4);
   static const Color kProjectIconColor8 = Color(0xFFF97316);
   static const Color kProjectIconColor9 = Color(0xFF9CA3AF);
+
+  static List<ColorModel> kProjectIconColors = [
+    ColorModel(kProjectIconColor1.value),
+    ColorModel(kProjectIconColor2.value),
+    ColorModel(kProjectIconColor3.value),
+    ColorModel(kProjectIconColor4.value),
+    ColorModel(kProjectIconColor5.value),
+    ColorModel(kProjectIconColor6.value),
+    ColorModel(kProjectIconColor7.value),
+    ColorModel(kProjectIconColor8.value),
+    ColorModel(kProjectIconColor9.value),
+  ];
 
   //task priority colors
   static const Color kHighPriorityColor = Color(0xFFFB923C);

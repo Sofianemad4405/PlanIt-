@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planitt/core/providers/providers.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/core/widgets/add_todo_dialog.dart';
@@ -8,6 +7,7 @@ import 'package:planitt/core/widgets/custom_app_bar.dart';
 import 'package:planitt/core/widgets/custom_nav_bar.dart';
 import 'package:planitt/features/calender/presentation/views/calendar_page_view_body.dart';
 import 'package:planitt/features/focus/presentation/views/focus_page_view_body.dart';
+import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/home/presentation/views/home_page_view_body.dart';
 import 'package:planitt/features/projects/presentation/views/projects_page_view_body.dart';
 
@@ -42,8 +42,8 @@ class _RootState extends State<Root> {
           });
         },
       ),
-      floatingActionButton: Consumer(
-        builder: (context, ref, child) {
+      floatingActionButton: BlocBuilder<TodosCubit, TodosState>(
+        builder: (context, state) {
           return FloatingActionButton(
             shape: const CircleBorder(),
             onPressed: () {
@@ -53,7 +53,7 @@ class _RootState extends State<Root> {
                 builder: (context) {
                   return AddTodoDialog(
                     onSaved: (todo) {
-                      ref.read(todosControllerProvider.notifier).addTodo(todo);
+                      context.read<TodosCubit>().addTodo(todo);
                       context.pop();
                     },
                   );

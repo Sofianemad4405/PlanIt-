@@ -1,11 +1,11 @@
-import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/services/abstract_storage_service.dart';
 import 'package:planitt/core/utils/constants.dart';
+import 'package:planitt/features/projects/data/models/project_model.dart';
 
 abstract class ProjectsDataSource {
-  Future<List<ProjectEntity>> getProjects();
-  Future<void> addProject(ProjectEntity project);
-  Future<void> deleteProject(ProjectEntity project);
+  Future<List<ProjectModel>> getProjects();
+  Future<void> addProject(ProjectModel project);
+  Future<void> deleteProject(ProjectModel project);
 }
 
 class ProjectsDataSourceImpl implements ProjectsDataSource {
@@ -13,20 +13,20 @@ class ProjectsDataSourceImpl implements ProjectsDataSource {
   ProjectsDataSourceImpl(this.storageService);
 
   @override
-  Future<List<ProjectEntity>> getProjects() async {
-    final projects = await storageService.getAll<ProjectEntity>(
+  Future<List<ProjectModel>> getProjects() async {
+    final projects = await storageService.getAll<ProjectModel>(
       boxName: projectsBoxName,
     );
     return projects;
   }
 
   @override
-  Future<void> addProject(ProjectEntity project) async {
+  Future<void> addProject(ProjectModel project) async {
     await storageService.addItem(boxName: projectsBoxName, value: project);
   }
 
   @override
-  Future<void> deleteProject(ProjectEntity project) async {
+  Future<void> deleteProject(ProjectModel project) async {
     await storageService.delete(boxName: projectsBoxName, key: project.id);
   }
 }

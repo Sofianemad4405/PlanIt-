@@ -1,44 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
-import 'package:planitt/core/providers/providers.dart';
-import 'package:planitt/features/home/presentation/widgets/edit_note_dialog.dart';
 import 'package:planitt/features/home/presentation/widgets/task_list_tile.dart';
 
-class TodosListView extends ConsumerWidget {
-  const TodosListView({super.key, required this.todos});
+class TodosListView extends StatelessWidget {
+  const TodosListView({
+    super.key,
+    required this.todos,
+    required this.onDelete,
+    required this.onTileTab,
+  });
 
   final List<ToDoEntity> todos;
+  final Function(ToDoEntity) onDelete;
+  final Function(ToDoEntity) onTileTab;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.only(top: 4.0),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
+        itemCount: todos.length,
         itemBuilder: (context, index) {
+          final todo = todos[index];
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 2),
             child: TaskListtile(
-              toDo: todos[index],
-              onDelete: () {
-                ref
-                    .read(todosControllerProvider.notifier)
-                    .deleteTodo(todos[index]);
-              },
-              onTileTab: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return EditNoteDialog(toDo: todos[index]);
-                  },
-                );
-              },
+              toDo: todo,
+              onDelete: () => onDelete(todo),
+              onTileTab: () => onTileTab(todo),
             ),
           );
         },
-        itemCount: todos.length,
       ),
     );
   }
