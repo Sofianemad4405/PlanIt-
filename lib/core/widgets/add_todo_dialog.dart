@@ -1,10 +1,10 @@
 import 'dart:developer';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:planitt/core/adapters/color_model.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
@@ -28,33 +28,33 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   final _formKey = GlobalKey<FormState>();
   DateTime selectedDate = DateTime.now();
   String selectedPriority = "Low";
-  late ProjectEntity selectedProject;
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  List<ProjectEntity> projects = [];
+  late ProjectEntity selectedProject;
+
   @override
   void initState() {
     super.initState();
-    _loadProjects();
-  }
-
-  Future<void> _loadProjects() async {
-    selectedProject = context.read<ProjectsCubit>().projects.first;
-    projects = context.read<ProjectsCubit>().projects;
+    selectedProject =
+        context.read<ProjectsCubit>().selectedProject ??
+        ProjectEntity.defaultProject();
+    log(selectedProject.name);
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xff111216),
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.all(16),
-        width: 361.59,
-        height: 406.88,
+        width: width * 0.8,
+        height: height * 0.46,
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -64,11 +64,12 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      "Add Task",
+                    Text(
+                      "Add Task".tr(),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const Spacer(),
@@ -80,11 +81,11 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                 ),
                 const Gap(10),
                 CustomTextField(
-                  hint: "Title",
+                  hint: "Title".tr(),
                   prefixIcon: false,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "Please enter a title";
+                      return "Please enter a title".tr();
                     }
                     return null;
                   },
@@ -92,41 +93,34 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                 ),
                 const Gap(10),
                 CustomTextField(
-                  hint: "Description (Optional)",
+                  hint: "Description (Optional)".tr(),
                   prefixIcon: false,
                   isDesc: true,
                   controller: descriptionController,
                 ),
                 const Gap(20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: CustomRow(
-                        mainIcon: const Icon(
-                          Iconsax.calendar_1,
-                          color: DarkMoodAppColors.kUnSelectedItemColor,
-                        ),
-                        smallIcon: const Icon(Iconsax.calendar_1, size: 16),
-                        text:
-                            "${selectedDate.day.toString()}/${selectedDate.month.toString()}/${selectedDate.year.toString()}",
-                        onTap: () {
-                          showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2100),
-                          ).then((value) {
-                            if (value != null) {
-                              setState(() {
-                                selectedDate = value;
-                              });
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ],
+                CustomRow(
+                  mainIcon: const Icon(
+                    Iconsax.calendar_1,
+                    color: DarkMoodAppColors.kUnSelectedItemColor,
+                  ),
+                  smallIcon: const Icon(Iconsax.calendar_1, size: 16),
+                  text:
+                      "${selectedDate.day.toString()}/${selectedDate.month.toString()}/${selectedDate.year.toString()}",
+                  onTap: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2100),
+                    ).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedDate = value;
+                        });
+                      }
+                    });
+                  },
                 ),
                 const Gap(10),
                 Row(
@@ -144,10 +138,15 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                               height: 35.97,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: DarkMoodAppColors
-                                      .kTextFieldBorderSideColor,
+                                  color:
+                                      Theme.of(context)
+                                          .inputDecorationTheme
+                                          .enabledBorder
+                                          ?.borderSide
+                                          .color ??
+                                      Colors.grey,
                                 ),
-                                color: DarkMoodAppColors.kFillColor,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: DropdownButtonHideUnderline(
@@ -156,15 +155,36 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                     horizontal: 8,
                                   ),
                                   child: DropdownButton<ProjectEntity>(
-                                    value: projects.contains(selectedProject)
+                                    isExpanded: true,
+                                    value:
+                                        context
+                                            .watch<ProjectsCubit>()
+                                            .projects
+                                            .contains(selectedProject)
                                         ? selectedProject
                                         : null,
-                                    items: projects.map((project) {
-                                      return DropdownMenuItem(
-                                        value: project,
-                                        child: Text(project.name),
-                                      );
-                                    }).toList(),
+                                    items: context
+                                        .watch<ProjectsCubit>()
+                                        .projects
+                                        .map((project) {
+                                          return DropdownMenuItem(
+                                            value: project,
+                                            child: Expanded(
+                                              child: Text(
+                                                project.name,
+                                                style: TextStyle(
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.onSurface,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                maxLines: 1,
+                                              ),
+                                            ),
+                                          );
+                                        })
+                                        .toList(),
                                     onChanged: (value) {
                                       setState(() {
                                         selectedProject = value!;
@@ -192,10 +212,15 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                               height: 35.97,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: DarkMoodAppColors
-                                      .kTextFieldBorderSideColor,
+                                  color:
+                                      Theme.of(context)
+                                          .inputDecorationTheme
+                                          .enabledBorder
+                                          ?.borderSide
+                                          .color ??
+                                      Colors.grey,
                                 ),
-                                color: DarkMoodAppColors.kFillColor,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: DropdownButtonHideUnderline(
@@ -208,7 +233,14 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                     items: priorities.map((priority) {
                                       return DropdownMenuItem(
                                         value: priority,
-                                        child: Text(priority),
+                                        child: Text(
+                                          priority,
+                                          style: TextStyle(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                          ),
+                                        ),
                                       );
                                     }).toList(),
                                     onChanged: (value) {

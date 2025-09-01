@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -31,7 +32,7 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xff111216),
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.all(16),
@@ -45,11 +46,12 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      "Add Project",
+                    Text(
+                      "Add Project".tr(),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const Spacer(),
@@ -60,33 +62,33 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
                   ],
                 ),
                 const Gap(20),
-                const Text(
-                  "Project name",
+                Text(
+                  "Project name".tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: DarkMoodAppColors.kWhiteColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const Gap(5),
                 CustomTextField(
-                  hint: "Enter project name",
+                  hint: "Enter project name".tr(),
                   prefixIcon: false,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "Please enter a title";
+                      return "Please enter a project name".tr();
                     }
                     return null;
                   },
                   controller: projectNameController,
                 ),
                 const Gap(20),
-                const Text(
-                  "Project Color",
+                Text(
+                  "Project Color".tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: DarkMoodAppColors.kWhiteColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const Gap(5),
@@ -119,7 +121,7 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
                               : EdgeInsets.zero,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? Colors.white
+                                ? Theme.of(context).colorScheme.onSurface
                                 : Colors.transparent,
                             shape: BoxShape.circle,
                           ),
@@ -132,12 +134,12 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
                     },
                   ),
                 ),
-                const Text(
-                  "Project Icon",
+                Text(
+                  "Project Icon".tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: DarkMoodAppColors.kWhiteColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const Gap(5),
@@ -163,7 +165,7 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: selectedIcon == projectsIcons[index]
-                                ? const Color(0xFF374151)
+                                ? Theme.of(context).colorScheme.onSurface
                                 : Colors.transparent,
                             borderRadius: const BorderRadius.all(
                               Radius.circular(8),
@@ -172,8 +174,10 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
                           child: Center(
                             child: Text(
                               projectsIcons[index],
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: selectedIcon == projectsIcons[index]
+                                    ? Theme.of(context).colorScheme.onSurface
+                                    : Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),

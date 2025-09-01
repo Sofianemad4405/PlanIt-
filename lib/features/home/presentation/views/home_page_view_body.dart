@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,174 +24,239 @@ class HomePageViewBody extends StatefulWidget {
 class _HomePageViewState extends State<HomePageViewBody>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  bool isSearching = false;
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
+  TextEditingController query = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _offsetAnimation =
+        Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.fastEaseInToSlowEaseOut,
+          ),
+        );
+
+    _controller.forward();
+    context.read<TodosCubit>().init();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _controller.dispose();
+    query.dispose();
     super.dispose();
   }
 
+  bool showFilter = false;
+
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Good Evening",
-                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    DateFormat('EEEE, MMMM d').format(DateTime.now()),
-                    style: const TextStyle(
-                      color: DarkMoodAppColors.kUnSelectedItemColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: CustomTextField(
-                            hint: "Search",
-                            prefixIcon: true,
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                child: Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Good Evening".tr(),
+                          style: Theme.of(context).textTheme.headlineMedium!
+                              .copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          DateFormat(
+                            'EEEE، d MMMM',
+                            context.locale.toString(),
+                          ).format(DateTime.now()),
+                          style: const TextStyle(
+                            color: DarkMoodAppColors.kUnSelectedItemColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1F),
-                          borderRadius: BorderRadius.circular(
-                            AppNumbers.kEight,
-                          ),
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            "assets/svgs/filter.svg",
-                            height: 25,
-                            width: 25,
-                            colorFilter: const ColorFilter.mode(
-                              Colors.white,
-                              BlendMode.srcIn,
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 50,
+                                child: CustomTextField(
+                                  controller: query,
+                                  onChanged: (value) {
+                                    if (value.isEmpty) {
+                                      context.read<TodosCubit>().getAllTodos();
+                                    } else {
+                                      context.read<TodosCubit>().searchTodos(
+                                        value,
+                                      );
+                                    }
+                                  },
+                                  hint: "Search".tr(),
+                                  prefixIcon: true,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 10),
+                            Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).inputDecorationTheme.fillColor,
+                                borderRadius: BorderRadius.circular(
+                                  AppNumbers.kEight,
+                                ),
+                                border: Border.all(
+                                  color:
+                                      Theme.of(context)
+                                          .inputDecorationTheme
+                                          .enabledBorder
+                                          ?.borderSide
+                                          .color ??
+                                      Colors.grey,
+                                ),
+                              ),
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      showFilter = !showFilter;
+                                    });
+                                  },
+                                  child: SvgPicture.asset(
+                                    "assets/svgs/filter.svg",
+                                    height: 25,
+                                    width: 25,
+                                    colorFilter: ColorFilter.mode(
+                                      Theme.of(context).colorScheme.onSurface,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SliverAppBar(
-            pinned: true,
-            floating: false,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            automaticallyImplyLeading: false,
-            toolbarHeight: 0,
-            bottom: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(text: "Today"),
-                Tab(text: "Upcoming"),
-                Tab(text: "All"),
-              ],
-              labelColor: DarkMoodAppColors.kSelectedItemColor,
-              unselectedLabelColor: DarkMoodAppColors.kUnSelectedItemColor,
-              indicatorColor: DarkMoodAppColors.kSelectedItemColor,
-              indicatorWeight: 2,
+            SliverAppBar(
+              pinned: true,
+              floating: true,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              automaticallyImplyLeading: false,
+              toolbarHeight: 0,
+              bottom: TabBar(
+                dividerColor: Colors.grey[700],
+                controller: _tabController,
+                tabs: [
+                  Tab(text: "Today".tr()),
+                  Tab(text: "Upcoming".tr()),
+                  Tab(text: "All".tr()),
+                ],
+                labelColor: DarkMoodAppColors.kSelectedItemColor,
+                unselectedLabelColor: DarkMoodAppColors.kUnSelectedItemColor,
+                indicatorColor: DarkMoodAppColors.kSelectedItemColor,
+                indicatorWeight: 2,
+              ),
             ),
+          ];
+        },
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: BlocConsumer<TodosCubit, TodosState>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              final List<ToDoEntity> todayTodos = (state is TodosLoaded)
+                  ? state.todos.where((todo) => todo.isToday).toList()
+                  : [];
+              final List<ToDoEntity> upcomingTodos = state is TodosLoaded
+                  ? state.todos.where((todo) => !todo.isToday).toList()
+                  : [];
+              final List<ToDoEntity> allTodos = state is TodosLoaded
+                  ? state.todos
+                  : [];
+              return TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _tabController,
+                children: [
+                  todayTodos.isEmpty
+                      ? const NoTasks(text: "No tasks for today")
+                      : TodosListView(
+                          todos: todayTodos,
+                          onDelete: (todo) {
+                            context.read<TodosCubit>().deleteTodo(todo);
+                          },
+                          onTileTab: (todo) {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  TodoReadDialog(toDoKey: todo.key),
+                            );
+                          },
+                        ),
+                  upcomingTodos.isEmpty
+                      ? const NoTasks(text: "No upcoming tasks")
+                      : TodosListView(
+                          todos: upcomingTodos,
+                          onDelete: (todo) {
+                            context.read<TodosCubit>().deleteTodo(todo);
+                          },
+                          onTileTab: (todo) {
+                            // context.read<HomeCubit>().viewTodo(todo);
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  TodoReadDialog(toDoKey: todo.key),
+                            );
+                          },
+                        ),
+                  allTodos.isEmpty
+                      ? const NoTasks(text: "No tasks added yet")
+                      : TodosListView(
+                          todos: allTodos,
+                          onDelete: (todo) {
+                            context.read<TodosCubit>().deleteTodo(todo);
+                          },
+                          onTileTab: (todo) {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  TodoReadDialog(toDoKey: todo.key),
+                            );
+                          },
+                        ),
+                ],
+              );
+            },
           ),
-        ];
-      },
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: BlocConsumer<TodosCubit, TodosState>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            final List<ToDoEntity> todayTodos = state is TodosSuccessHome
-                ? state.todos.where((todo) => todo.isToday).toList()
-                : [];
-            final List<ToDoEntity> upcomingTodos = state is TodosSuccessHome
-                ? state.todos.where((todo) => !todo.isToday).toList()
-                : [];
-            final List<ToDoEntity> allTodos = state is TodosSuccessHome
-                ? state.todos
-                : [];
-            return TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: _tabController,
-              children: [
-                todayTodos.isEmpty
-                    ? const NoTasks(text: "No tasks for today")
-                    : TodosListView(
-                        todos: todayTodos,
-                        onDelete: (todo) {
-                          context.read<TodosCubit>().deleteTodo(todo);
-                        },
-                        onTileTab: (todo) {
-                          showDialog(
-                            context: context,
-                            builder: (context) =>
-                                TodoReadDialog(toDoKey: todo.key),
-                          );
-                        },
-                      ),
-                upcomingTodos.isEmpty
-                    ? const NoTasks(text: "No upcoming tasks")
-                    : TodosListView(
-                        todos: upcomingTodos,
-                        onDelete: (todo) {
-                          context.read<TodosCubit>().deleteTodo(todo);
-                        },
-                        onTileTab: (todo) {
-                          // context.read<HomeCubit>().viewTodo(todo);
-                          showDialog(
-                            context: context,
-                            builder: (context) =>
-                                TodoReadDialog(toDoKey: todo.key),
-                          );
-                        },
-                      ),
-                allTodos.isEmpty
-                    ? const NoTasks(text: "No tasks added yet")
-                    : TodosListView(
-                        todos: allTodos,
-                        onDelete: (todo) {
-                          context.read<TodosCubit>().deleteTodo(todo);
-                        },
-                        onTileTab: (todo) {
-                          showDialog(
-                            context: context,
-                            builder: (context) =>
-                                TodoReadDialog(toDoKey: todo.key),
-                          );
-                        },
-                      ),
-              ],
-            );
-          },
         ),
       ),
     );

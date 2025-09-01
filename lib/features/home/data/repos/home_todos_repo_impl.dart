@@ -94,4 +94,14 @@ class HomeTodosRepoImpl implements HomeTodosRepo {
       return todos.map((todo) => todo.toEntity()).toList();
     });
   }
+
+  @override
+  Future<List<ToDoEntity>> filterTodos({
+    List<String>? priorities,
+    List<String>? projects,
+  }) async {
+    return await homeDataSource
+        .filterTodos(priorities: priorities, projects: projects)
+        .then((todo) => todo.map((todo) => todo.toEntity()).toList());
+  }
 }

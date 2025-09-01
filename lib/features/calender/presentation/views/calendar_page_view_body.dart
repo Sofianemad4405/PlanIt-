@@ -1,30 +1,8 @@
-// import 'package:flutter/material.dart';
-// import 'package:syncfusion_flutter_calendar/calendar.dart';
-
-// class CalendarPageViewBody extends StatefulWidget {
-//   const CalendarPageViewBody({super.key});
-
-//   @override
-//   State<CalendarPageViewBody> createState() => _CalendarPageViewBodyState();
-// }
-
-// class _CalendarPageViewBodyState extends State<CalendarPageViewBody> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(children: [SfCalendar(
-//         view: CalendarView.month,
-//         dataSource: MeetingDataSource(_getDataSource()),
-//         // by default the month appointment display mode set as Indicator, we can
-//         // change the display mode as appointment using the appointment display
-//         // mode property
-//         monthViewSettings: const MonthViewSettings(
-//           appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-//         ),
-//       ),]);
-//   }
-// }
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
+import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 /// The hove page which hosts the calendar
@@ -37,97 +15,107 @@ class CalendarPageViewBody extends StatefulWidget {
   _CalendarPageViewBodyState createState() => _CalendarPageViewBodyState();
 }
 
-class _CalendarPageViewBodyState extends State<CalendarPageViewBody> {
+class _CalendarPageViewBodyState extends State<CalendarPageViewBody>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _offsetAnimation =
+        Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.fastEaseInToSlowEaseOut,
+          ),
+        );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SfCalendar(
-      view: CalendarView.month,
-      dataSource: MeetingDataSource(_getDataSource()),
-      // by default the month appointment display mode set as Indicator, we can
-      // change the display mode as appointment using the appointment display
-      // mode property
-      monthViewSettings: const MonthViewSettings(
-        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: BlocConsumer<TodosCubit, TodosState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return SfCalendar(
+            view: CalendarView.month,
+            dataSource: TodosDataSource(_getDataSource()),
+            // by default the month appointment display mode set as Indicator, we can
+            // change the display mode as appointment using the appointment display
+            // mode property
+            monthViewSettings: const MonthViewSettings(
+              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+            ),
+          );
+        },
       ),
     );
   }
 
-  List<Meeting> _getDataSource() {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    meetings.add(
-      Meeting('Conference', startTime, endTime, const Color(0xFF0F8644), false),
-    );
-    return meetings;
+  List<ToDoEntity> _getDataSource() {
+    final List<ToDoEntity> todos = context.read<TodosCubit>().todos;
+    return todos;
   }
 }
 
 /// An object to set the appointment collection data source to calendar, which
 /// used to map the custom appointment data to the calendar appointment, and
 /// allows to add, remove or reset the appointment collection.
-class MeetingDataSource extends CalendarDataSource {
+class TodosDataSource extends CalendarDataSource {
   /// Creates a meeting data source, which used to set the appointment
   /// collection to the calendar
-  MeetingDataSource(List<Meeting> source) {
-    appointments = source;
+  TodosDataSource(List<ToDoEntity> todos) {
+    appointments = todos;
   }
 
   @override
   DateTime getStartTime(int index) {
-    return _getMeetingData(index).from;
+    return _getTodoData(index).createdAt;
   }
 
   @override
   DateTime getEndTime(int index) {
-    return _getMeetingData(index).to;
+    return _getTodoData(index).dueDate ??
+        DateTime.now().add(const Duration(days: 1));
   }
 
   @override
   String getSubject(int index) {
-    return _getMeetingData(index).eventName;
+    return _getTodoData(index).title;
   }
 
   @override
   Color getColor(int index) {
-    return _getMeetingData(index).background;
+    return Color(_getTodoData(index).project.color.value);
   }
 
   @override
   bool isAllDay(int index) {
-    return _getMeetingData(index).isAllDay;
+    return true;
   }
 
-  Meeting _getMeetingData(int index) {
-    final dynamic meeting = appointments![index];
-    late final Meeting meetingData;
-    if (meeting is Meeting) {
-      meetingData = meeting;
+  ToDoEntity _getTodoData(int index) {
+    final dynamic todo = appointments![index];
+    late final ToDoEntity todoData;
+    if (todo is ToDoEntity) {
+      todoData = todo;
     }
 
-    return meetingData;
+    return todoData;
   }
-}
-
-/// Custom business object class which contains properties to hold the detailed
-/// information about the event data which will be rendered in calendar.
-class Meeting {
-  /// Creates a meeting class with required details.
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
-
-  /// Event name which is equivalent to subject property of [Appointment].
-  String eventName;
-
-  /// From which is equivalent to start time property of [Appointment].
-  DateTime from;
-
-  /// To which is equivalent to end time property of [Appointment].
-  DateTime to;
-
-  /// Background which is equivalent to color property of [Appointment].
-  Color background;
-
-  /// IsAllDay which is equivalent to isAllDay property of [Appointment].
-  bool isAllDay;
 }

@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' as completed;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -23,7 +25,7 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
   Widget build(BuildContext context) {
     return BlocBuilder<TodosCubit, TodosState>(
       builder: (context, state) {
-        if (state is TodosSuccessHome) {
+        if (state is TodosLoaded) {
           final todo = state.todos.firstWhere(
             (todo) => todo.key == widget.toDoKey,
           );
@@ -49,9 +51,9 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                       maxHeight: maxH,
                     ),
                     child: Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xff111216),
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(8),
                           topRight: Radius.circular(8),
                         ),
@@ -77,8 +79,10 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                     todo.title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: DarkMoodAppColors.kWhiteColor,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 20,
                                     ),
@@ -97,8 +101,12 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/svgs/pen.svg",
-                                    height: 18,
-                                    width: 18,
+                                    height: 24,
+                                    width: 24,
+                                    colorFilter: ColorFilter.mode(
+                                      Theme.of(context).colorScheme.onSurface,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                   tooltip: 'Edit',
                                 ),
@@ -111,8 +119,8 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/svgs/trash.svg",
-                                    height: 18,
-                                    width: 18,
+                                    height: 24,
+                                    width: 24,
                                   ),
                                   tooltip: 'Delete',
                                 ),
@@ -120,28 +128,30 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   visualDensity: VisualDensity.compact,
                                   splashRadius: 18,
                                   onPressed: () => context.pop(),
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Iconsax.close_square,
-                                    color: Colors.white,
-                                    size: 20,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                    size: 24,
                                   ),
                                   tooltip: 'Close',
                                 ),
                               ],
                             ),
                             const Gap(10),
-                            const Text(
-                              "Description",
+                            Text(
+                              "Description".tr(),
                               style: TextStyle(
-                                color: DarkMoodAppColors.kUnSelectedItemColor,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
                             const Gap(10),
                             Text(
-                              todo.description ?? "No description",
-                              style: const TextStyle(
-                                color: DarkMoodAppColors.kWhiteColor,
+                              todo.description ?? "No description".tr(),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
                               ),
@@ -155,15 +165,18 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   child: EditToDoCustomColumn(
                                     isEditing: false,
                                     isContainer: false,
-                                    title: "Due Date",
+                                    title: "Due Date".tr(),
                                     data: Text(
                                       todo.dueDate != null
                                           ? DateFormat(
                                               'EEEE, MMMM d,\ny',
+                                              context.locale.toString(),
                                             ).format(todo.dueDate!)
                                           : "No due date",
-                                      style: const TextStyle(
-                                        color: DarkMoodAppColors.kWhiteColor,
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 14,
                                       ),
@@ -177,7 +190,7 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   child: EditToDoCustomColumn(
                                     isEditing: false,
                                     isContainer: true,
-                                    title: "Priority",
+                                    title: "Priority".tr(),
                                     data: Container(
                                       decoration: BoxDecoration(
                                         color: todo.priority == "High"
@@ -195,10 +208,9 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                         padding: const EdgeInsets.all(4),
                                         child: Center(
                                           child: Text(
-                                            todo.priority,
+                                            todo.priority.tr(),
                                             style: const TextStyle(
-                                              color:
-                                                  DarkMoodAppColors.kWhiteColor,
+                                              color: Colors.white,
                                               fontWeight: FontWeight.w500,
                                               fontSize: 14,
                                             ),
@@ -220,7 +232,7 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   child: EditToDoCustomColumn(
                                     isEditing: false,
                                     isContainer: true,
-                                    title: "Project",
+                                    title: "Project".tr(),
                                     data: Container(
                                       decoration: ShapeDecoration(
                                         color: todo.project.name == "Work"
@@ -253,15 +265,12 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                             style: TextStyle(
                                               color:
                                                   todo.project.name == "Inbox"
-                                                  ? DarkMoodAppColors
-                                                        .kProjectIconColor1
+                                                  ? AppColors.kProjectIconColor1
                                                   : todo.project.name ==
                                                         "Personal"
-                                                  ? DarkMoodAppColors
-                                                        .kProjectIconColor2
+                                                  ? AppColors.kProjectIconColor2
                                                   : todo.project.name == "Work"
-                                                  ? DarkMoodAppColors
-                                                        .kProjectIconColor3
+                                                  ? AppColors.kProjectIconColor3
                                                   : todo.project.color.color,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500,
@@ -279,13 +288,16 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   child: EditToDoCustomColumn(
                                     isEditing: false,
                                     isContainer: false,
-                                    title: "Created",
+                                    title: "Created".tr(),
                                     data: Text(
                                       DateFormat(
                                         'EEEE, MMMM d,\ny',
+                                        context.locale.toString(),
                                       ).format(todo.createdAt),
-                                      style: const TextStyle(
-                                        color: DarkMoodAppColors.kWhiteColor,
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 14,
                                       ),
@@ -300,11 +312,12 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                               children: [
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width * .4,
-                                  child: const Text(
-                                    "Subtasks",
+                                  child: Text(
+                                    "Subtasks".tr(),
                                     style: TextStyle(
-                                      color: DarkMoodAppColors
-                                          .kUnSelectedItemColor,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 14,
                                     ),
@@ -314,14 +327,14 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width * .4,
                                   child: Text(
-                                    "${todo.subtasks?.where((e) => e.isCompleted).length}/${todo.subtasks?.length ?? 0} completed",
+                                    "${todo.subtasks?.where((e) => e.isCompleted).length}/${todo.subtasks?.length ?? 0} ${"completed".tr()}",
                                   ),
                                 ),
                               ],
                             ),
                             const Gap(5),
                             if (todo.subtasks?.isEmpty ?? true)
-                              const Text("No subtasks")
+                              Text("No subtasks".tr())
                             else
                               ListView.builder(
                                 shrinkWrap: true,

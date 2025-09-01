@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
@@ -31,8 +32,12 @@ class SaveOrCancelButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            isCancel ? "Cancel" : "Save",
-            style: TextStyle(color: DarkMoodAppColors.kWhiteColor),
+            isCancel ? "Cancel".tr() : "Save".tr(),
+            style: TextStyle(
+              color: isCancel
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ),
       ),

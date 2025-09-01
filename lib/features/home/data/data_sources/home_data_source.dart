@@ -9,6 +9,10 @@ abstract class HomeDataSource {
   Future<List<ToDoModel>> getAllTodos();
   Future<List<ToDoModel>> getTaskByProjectId(String projectId);
   Future<List<ToDoModel>> searchTodos(String query);
+  Future<List<ToDoModel>> filterTodos({
+    List<String>? priorities,
+    List<String>? projects,
+  });
   Future<void> addTodo(ToDoModel toDo);
   Future<void> deleteTodo(ToDoModel toDo);
   Future<void> updateTodo(String key, ToDoModel toDo);
@@ -63,13 +67,12 @@ class HomeDataSourceImpl implements HomeDataSource {
   @override
   Future<List<ToDoModel>> searchTodos(String query) async {
     final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
-    return todos
-        .where(
-          (t) =>
-              t.title.toLowerCase().contains(query.toLowerCase()) ||
-              t.description!.toLowerCase().contains(query.toLowerCase()),
-        )
-        .toList();
+    return todos.where((t) {
+      final titleMatch = t.title.toLowerCase().contains(query.toLowerCase());
+      final descriptionMatch =
+          t.description?.toLowerCase().contains(query.toLowerCase()) ?? false;
+      return titleMatch || descriptionMatch;
+    }).toList();
   }
 
   @override
@@ -118,5 +121,25 @@ class HomeDataSourceImpl implements HomeDataSource {
   Future<List<ToDoModel>> getTaskByProjectId(String projectId) async {
     final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
     return todos.where((t) => t.project.id == projectId).toList();
+  }
+
+  @override
+  Future<List<ToDoModel>> filterTodos({
+    List<String>? priorities,
+    List<String>? projects,
+  }) async {
+    final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
+
+    return todos.where((t) {
+      final matchPriority = priorities == null || priorities.isEmpty
+          ? true
+          : priorities.contains(t.priority);
+
+      final matchProject = projects == null || projects.isEmpty
+          ? true
+          : projects.contains(t.project.name);
+
+      return matchPriority && matchProject;
+    }).toList();
   }
 }

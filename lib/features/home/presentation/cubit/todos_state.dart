@@ -7,9 +7,9 @@ final class TodosInitial extends TodosState {}
 
 final class TodosLoading extends TodosState {}
 
-final class TodosSuccessHome extends TodosState {
+final class TodosLoaded extends TodosState {
   final List<ToDoEntity> todos;
-  TodosSuccessHome({required this.todos});
+  TodosLoaded({required this.todos});
 }
 
 final class TodosError extends TodosState {

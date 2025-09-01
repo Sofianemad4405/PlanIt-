@@ -7,6 +7,10 @@ abstract class HomeTodosRepo {
   Future<List<ToDoEntity>> getAllTodos();
   Future<List<ToDoEntity>> getTaskByProjectId(String projectId);
   Future<List<ToDoEntity>> searchTodos(String query);
+  Future<List<ToDoEntity>> filterTodos({
+    List<String>? priorities,
+    List<String>? projects,
+  });
   Future<void> addTodo(ToDoEntity toDo);
   Future<void> deleteTodo(ToDoEntity toDo);
   Future<void> updateTodo(String key, ToDoEntity toDo);

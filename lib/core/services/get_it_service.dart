@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:planitt/app/controllers/theme_controller.dart';
 import 'package:planitt/core/services/hive_storage_service.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/features/home/data/data_sources/home_data_source.dart';
@@ -30,6 +31,11 @@ void setupServiceLocator() {
 
   sl.registerFactory<TodosCubit>(() => TodosCubit(sl<HomeTodosRepo>()));
   sl.registerFactory<ProjectsCubit>(
-    () => ProjectsCubit(sl<ProjectsRepo>(), sl<HomeTodosRepo>()),
+    () => ProjectsCubit(
+      sl<ProjectsRepo>(),
+      sl<HomeTodosRepo>(),
+      sl<TodosCubit>(),
+    ),
   );
+  sl.registerFactory<ThemeCubit>(() => ThemeCubit());
 }

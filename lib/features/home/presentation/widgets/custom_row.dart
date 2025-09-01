@@ -22,20 +22,24 @@ class CustomRow extends StatelessWidget {
       child: Row(
         children: [
           mainIcon,
-          Gap(5),
+          const Gap(5),
           Expanded(
             child: Container(
               height: 35.97,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: DarkMoodAppColors.kTextFieldBorderSideColor,
+                  color:
+                      Theme.of(
+                        context,
+                      ).inputDecorationTheme.enabledBorder?.borderSide.color ??
+                      Colors.grey,
                 ),
-                color: DarkMoodAppColors.kFillColor,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(children: [Text(text), Spacer(), smallIcon]),
+                child: Row(children: [Text(text), const Spacer(), smallIcon]),
               ),
             ),
           ),

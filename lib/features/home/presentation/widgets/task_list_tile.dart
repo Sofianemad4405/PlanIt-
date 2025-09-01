@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
@@ -23,13 +24,13 @@ class TaskListtile extends StatelessWidget {
     return ListTile(
       onTap: () => onTileTab(),
       minTileHeight: AppNumbers.kListTileHeight,
-      tileColor: DarkMoodAppColors.kFillColor,
+      tileColor: Theme.of(context).listTileTheme.tileColor,
       title: Text(
         toDo.title,
         style: TextStyle(
           color: toDo.isToday
-              ? DarkMoodAppColors.kRedColor
-              : DarkMoodAppColors.kWhiteColor,
+              ? AppColors.kRedColor
+              : Theme.of(context).colorScheme.onSurface,
           fontSize: AppNumbers.kSixteen,
           fontWeight: FontWeight.w500,
         ),
@@ -57,11 +58,11 @@ class TaskListtile extends StatelessWidget {
                   toDo.project.name,
                   style: TextStyle(
                     color: toDo.project.name == "Inbox"
-                        ? DarkMoodAppColors.kProjectIconColor1
+                        ? AppColors.kProjectIconColor1
                         : toDo.project.name == "Personal"
-                        ? DarkMoodAppColors.kProjectIconColor2
+                        ? AppColors.kProjectIconColor2
                         : toDo.project.name == "Work"
-                        ? DarkMoodAppColors.kProjectIconColor3
+                        ? AppColors.kProjectIconColor3
                         : toDo.project.color.color,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -79,26 +80,30 @@ class TaskListtile extends StatelessWidget {
                 AppImages.kCalendarIcon,
                 colorFilter: ColorFilter.mode(
                   toDo.isToday
-                      ? DarkMoodAppColors.kRedColor
-                      : DarkMoodAppColors.kDateColor,
+                      ? AppColors.kRedColor
+                      : Theme.of(context).colorScheme.onSurface,
                   BlendMode.srcIn,
                 ),
               ),
               const Gap(5),
               toDo.isToday
-                  ? const Text(
-                      "Today",
-                      style: TextStyle(color: DarkMoodAppColors.kRedColor),
+                  ? Text(
+                      "Today".tr(),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     )
                   : toDo.isTomorrow
-                  ? const Text(
-                      "Tomorrow",
-                      style: TextStyle(color: DarkMoodAppColors.kDateColor),
+                  ? Text(
+                      "Tomorrow".tr(),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     )
                   : Text(
                       "${dateToMonth(toDo.dueDate!.month)} ${toDo.dueDate!.day}",
-                      style: const TextStyle(
-                        color: DarkMoodAppColors.kDateColor,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -118,14 +123,14 @@ class TaskListtile extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: toDo.priority == "Low"
-              ? DarkMoodAppColors.kLowPriorityColor
+              ? AppColors.kLowPriorityColor
               : toDo.priority == "Medium"
-              ? DarkMoodAppColors.kMediumPriorityColor
+              ? AppColors.kMediumPriorityColor
               : toDo.priority == "High"
-              ? DarkMoodAppColors.kHighPriorityColor
+              ? AppColors.kHighPriorityColor
               : toDo.priority == "Urgent"
-              ? DarkMoodAppColors.kUrgentPriorityColor
-              : DarkMoodAppColors.kProjectIconColor9,
+              ? AppColors.kUrgentPriorityColor
+              : AppColors.kProjectIconColor9,
         ),
       ),
     );

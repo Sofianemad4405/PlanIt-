@@ -7,9 +7,14 @@ final class ProjectsInitial extends ProjectsState {}
 
 final class ProjectsLoading extends ProjectsState {}
 
-final class ProjectsLoaded extends ProjectsState {
+final class ProjectsLoadedInMainProjectsPage extends ProjectsState {
   final List<ProjectEntity> projects;
-  ProjectsLoaded({required this.projects});
+  ProjectsLoadedInMainProjectsPage({required this.projects});
+}
+
+final class TodosLoadedInProjectDetailsPage extends ProjectsState {
+  final ProjectEntity project;
+  TodosLoadedInProjectDetailsPage({required this.project});
 }
 
 final class ProjectsDetailsViewing extends ProjectsState {

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:planitt/core/theme/app_colors.dart';
@@ -17,10 +18,12 @@ class CustomNavBar extends StatelessWidget {
       data: Theme.of(context).copyWith(
         splashFactory: NoSplash.splashFactory,
         splashColor: Colors.transparent,
-        highlightColor: Color(0XFF0B0B0C),
+        highlightColor: Theme.of(
+          context,
+        ).bottomNavigationBarTheme.backgroundColor,
       ),
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           border: Border(top: BorderSide(color: Color(0XFF1E2735))),
         ),
         child: BottomNavigationBar(
@@ -42,7 +45,7 @@ class CustomNavBar extends StatelessWidget {
                   BlendMode.srcIn,
                 ),
               ),
-              label: 'Home',
+              label: 'Home'.tr(),
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
@@ -54,7 +57,7 @@ class CustomNavBar extends StatelessWidget {
                   BlendMode.srcIn,
                 ),
               ),
-              label: 'Projects',
+              label: 'Projects'.tr(),
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
@@ -66,7 +69,7 @@ class CustomNavBar extends StatelessWidget {
                   BlendMode.srcIn,
                 ),
               ),
-              label: 'Calendar',
+              label: 'Calendar'.tr(),
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
@@ -78,7 +81,7 @@ class CustomNavBar extends StatelessWidget {
                   BlendMode.srcIn,
                 ),
               ),
-              label: 'Focus',
+              label: 'Focus'.tr(),
             ),
           ],
         ),

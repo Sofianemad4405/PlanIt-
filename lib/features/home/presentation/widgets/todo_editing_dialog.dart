@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -82,9 +83,9 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
             return ConstrainedBox(
               constraints: BoxConstraints(maxWidth: maxW, maxHeight: maxH),
               child: Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xff111216),
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
                   ),
@@ -110,8 +111,21 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                             Expanded(
                               child: TextFormField(
                                 controller: newTitle,
-                                decoration: const InputDecoration(
-                                  border: UnderlineInputBorder(),
+                                decoration: InputDecoration(
+                                  fillColor: Theme.of(
+                                    context,
+                                  ).colorScheme.surface,
+                                  border: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color:
+                                          Theme.of(context)
+                                              .inputDecorationTheme
+                                              .enabledBorder
+                                              ?.borderSide
+                                              .color ??
+                                          Colors.grey,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -158,16 +172,16 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                         const Gap(10),
 
                         // description
-                        const Text(
-                          "Description",
+                        Text(
+                          "Description".tr(),
                           style: TextStyle(
-                            color: DarkMoodAppColors.kUnSelectedItemColor,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                         const Gap(10),
                         CustomTextField(
-                          hint: "Description (Optional)",
+                          hint: "Description (Optional)".tr(),
                           prefixIcon: false,
                           isDesc: true,
                           controller: newDesc,
@@ -183,15 +197,20 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                               child: EditToDoCustomColumn(
                                 isEditing: true,
                                 isContainer: false,
-                                title: "Due Date",
+                                title: "Due Date".tr(),
                                 data: Container(
                                   height: 40,
                                   width: MediaQuery.of(context).size.width * .4,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4),
                                     border: Border.all(
-                                      color: DarkMoodAppColors
-                                          .kUnSelectedItemColor,
+                                      color:
+                                          Theme.of(context)
+                                              .inputDecorationTheme
+                                              .enabledBorder
+                                              ?.borderSide
+                                              .color ??
+                                          Colors.grey,
                                     ),
                                   ),
                                   child: Center(
@@ -218,10 +237,11 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                               "${newDueDate.month}/${newDueDate.day}/${newDueDate.year}",
                                             ),
                                             const Spacer(),
-                                            const Icon(
+                                            Icon(
                                               Iconsax.calendar,
-                                              color:
-                                                  DarkMoodAppColors.kWhiteColor,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                               size: 20,
                                             ),
                                           ],
@@ -239,14 +259,18 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                               child: EditToDoCustomColumn(
                                 isEditing: true,
                                 isContainer: true,
-                                title: "Priority",
+                                title: "Priority".tr(),
                                 data: Container(
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: DarkMoodAppColors
-                                          .kTextFieldBorderSideColor,
+                                      color:
+                                          Theme.of(context)
+                                              .inputDecorationTheme
+                                              .enabledBorder
+                                              ?.borderSide
+                                              .color ??
+                                          Colors.grey,
                                     ),
-                                    color: DarkMoodAppColors.kFillColor,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: DropdownButtonHideUnderline(
@@ -289,15 +313,19 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                               child: EditToDoCustomColumn(
                                 isEditing: true,
                                 isContainer: true,
-                                title: "Project",
+                                title: "Project".tr(),
                                 data: Container(
                                   height: 40,
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: DarkMoodAppColors
-                                          .kTextFieldBorderSideColor,
+                                      color:
+                                          Theme.of(context)
+                                              .inputDecorationTheme
+                                              .enabledBorder
+                                              ?.borderSide
+                                              .color ??
+                                          Colors.grey,
                                     ),
-                                    color: DarkMoodAppColors.kFillColor,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: DropdownButtonHideUnderline(
@@ -310,7 +338,13 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                         items: projects.map((project) {
                                           return DropdownMenuItem(
                                             value: project,
-                                            child: Text(project.name),
+                                            child: SizedBox(
+                                              width: 50,
+                                              child: Text(
+                                                project.name,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
                                           );
                                         }).toList(),
                                         onChanged: (value) {
@@ -331,13 +365,15 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                               child: EditToDoCustomColumn(
                                 isEditing: true,
                                 isContainer: false,
-                                title: "Created",
+                                title: "Created".tr(),
                                 data: Text(
                                   DateFormat(
                                     'EEEE, MMMM d,\ny',
                                   ).format(widget.toDo.createdAt),
-                                  style: const TextStyle(
-                                    color: DarkMoodAppColors.kWhiteColor,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 14,
                                   ),
@@ -354,10 +390,12 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                           children: [
                             SizedBox(
                               width: MediaQuery.of(context).size.width * .4,
-                              child: const Text(
-                                "Subtasks",
+                              child: Text(
+                                "Subtasks".tr(),
                                 style: TextStyle(
-                                  color: DarkMoodAppColors.kUnSelectedItemColor,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 14,
                                 ),
@@ -376,7 +414,7 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
 
                         // subtasks list
                         if (widget.toDo.subtasks?.isEmpty ?? true)
-                          const Text("No subtasks")
+                          Text("No subtasks".tr())
                         else
                           ListView.builder(
                             shrinkWrap: true,
@@ -406,6 +444,9 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                         decoration: subtask.isCompleted
                                             ? TextDecoration.lineThrough
                                             : TextDecoration.none,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                     const Spacer(),
@@ -419,7 +460,6 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                         log(
                                           "deleting subtask ${subtask.index} ${widget.toDo.key}",
                                         );
-                                        // TODO: delete logic
                                       },
                                     ),
                                   ],
@@ -427,11 +467,12 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                               );
                             },
                           ),
-
+                        const Gap(15),
                         // add subtask
                         TextFormField(
                           controller: subtask,
                           decoration: InputDecoration(
+                            fillColor: Theme.of(context).colorScheme.surface,
                             suffixIcon: Consumer(
                               builder: (context, ref, child) {
                                 return IconButton(
@@ -444,21 +485,28 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                       }
                                     }
                                   },
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.add,
-                                    color: DarkMoodAppColors.kSelectedItemColor,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 );
                               },
                             ),
-                            hintText: "Add a subtask...",
-                            hintStyle: const TextStyle(
-                              color: DarkMoodAppColors.kUnSelectedItemColor,
+                            hintText: "Add a subtask...".tr(),
+                            hintStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
-                            border: const UnderlineInputBorder(
+                            border: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color:
-                                    DarkMoodAppColors.kTextFieldBorderSideColor,
+                                    Theme.of(context)
+                                        .inputDecorationTheme
+                                        .enabledBorder
+                                        ?.borderSide
+                                        .color ??
+                                    Colors.grey,
                               ),
                             ),
                           ),
