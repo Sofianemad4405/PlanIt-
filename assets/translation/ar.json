@@ -32,7 +32,7 @@
     "Back to Projects":"العودة للمشاريع",
     "No Tasks Yet":"لا يوجد مهام",
     "Add tasks to this project":"أضف مهام لهذا المشروع",
-    "Search":"بحث",
+    "Search":"بحث في المهام",
     "Created":"تم إنشاء",
     "Subtasks":"المهام الفرعية",
     "Project":"المشروع",
@@ -57,5 +57,15 @@
     "Break Time":"وقت الراحة",
     "Focus Time":"وقت التركيز",
     "Due":"موعد التسليم",
-    "High Priority Tasks":"المهام ذات الأولوية العالية"
+    "High Priority Tasks":"المهام ذات الأولوية العالية",
+    "Good Morning":"صباح الخير",
+    "Good Afternoon":"مساء الخير",
+    "You don’t have any projects yet":"لسه معندكش أي مشاريع",
+    "Start your first one and make it count!":"ابتدي أول واحد وخليه يفرق",
+    "Change":"تغيير",
+    "Current Focus Task":"التركيز الحالي",
+    "overdue tasks":"مهام متأخرة",
+    "Dark Mode":"الوضع الليلي",
+    "Arabic Language":"اللغة العربية",
+    "Settings":"الإعدادات"
 }

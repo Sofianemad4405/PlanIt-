@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/core/theme/app_colors.dart';
+import 'package:planitt/core/utils/extention.dart';
+import 'package:planitt/core/widgets/add_todo_dialog.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -53,11 +58,26 @@ class _CalendarPageViewBodyState extends State<CalendarPageViewBody>
         listener: (context, state) {},
         builder: (context, state) {
           return SfCalendar(
+            onTap: (details) {
+              if (details.targetElement == CalendarElement.calendarCell &&
+                  details.date != null) {
+                final selectedDate = details.date!;
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AddTodoDialog(
+                      selectedDate: selectedDate,
+                      onSaved: (todo) {
+                        context.read<TodosCubit>().addTodo(todo);
+                        context.pop();
+                      },
+                    );
+                  },
+                );
+              }
+            },
             view: CalendarView.month,
             dataSource: TodosDataSource(_getDataSource()),
-            // by default the month appointment display mode set as Indicator, we can
-            // change the display mode as appointment using the appointment display
-            // mode property
             monthViewSettings: const MonthViewSettings(
               appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
             ),
@@ -101,7 +121,10 @@ class TodosDataSource extends CalendarDataSource {
 
   @override
   Color getColor(int index) {
-    return Color(_getTodoData(index).project.color.value);
+    return Color(
+      _getTodoData(index).project?.color.value ??
+          AppColors.kProjectIconColor1.toARGB32(),
+    );
   }
 
   @override

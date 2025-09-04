@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/easy_localization.dart' as completed;
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
@@ -67,12 +70,6 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SvgPicture.asset(
-                                  "assets/svgs/edit.svg",
-                                  height: 20,
-                                  width: 20,
-                                ),
-                                const Gap(10),
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width * .4,
                                   child: Text(
@@ -80,6 +77,9 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
+                                      decoration: todo.isFinished
+                                          ? TextDecoration.lineThrough
+                                          : null,
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.onSurface,
@@ -113,9 +113,13 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                 IconButton(
                                   visualDensity: VisualDensity.compact,
                                   splashRadius: 18,
-                                  onPressed: () {
-                                    context.read<TodosCubit>().deleteTodo(todo);
-                                    context.pop();
+                                  onPressed: () async {
+                                    await context.read<TodosCubit>().deleteTodo(
+                                      todo,
+                                    );
+                                    // if (mounted) {
+                                    //   context.pop();
+                                    // }
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/svgs/trash.svg",
@@ -235,20 +239,11 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                     title: "Project".tr(),
                                     data: Container(
                                       decoration: ShapeDecoration(
-                                        color: todo.project.name == "Work"
-                                            ? const Color(
-                                                0xffF59E0B,
-                                              ).withValues(alpha: 0.125)
-                                            : todo.project.name == "Personal"
-                                            ? const Color(
-                                                0xff10B981,
-                                              ).withValues(alpha: 0.125)
-                                            : todo.project.name == "Inbox"
-                                            ? const Color(
-                                                0xff4F46E5,
-                                              ).withValues(alpha: 0.125)
-                                            : todo.project.color.color
-                                                  .withValues(alpha: 0.125),
+                                        color:
+                                            todo.project?.color.color
+                                                .withValues(alpha: 0.125) ??
+                                            AppColors.kProjectIconColor1
+                                                .withValues(alpha: 0.125),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             4,
@@ -261,20 +256,16 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                             horizontal: 8.0,
                                           ),
                                           child: Text(
-                                            todo.project.name,
+                                            todo.project?.name ?? "No Project",
                                             style: TextStyle(
                                               color:
-                                                  todo.project.name == "Inbox"
-                                                  ? AppColors.kProjectIconColor1
-                                                  : todo.project.name ==
-                                                        "Personal"
-                                                  ? AppColors.kProjectIconColor2
-                                                  : todo.project.name == "Work"
-                                                  ? AppColors.kProjectIconColor3
-                                                  : todo.project.color.color,
+                                                  todo.project?.color.color ??
+                                                  AppColors.kProjectIconColor1,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500,
                                             ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ),
@@ -342,7 +333,7 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                 itemBuilder: (context, index) {
                                   final subtask = todo.subtasks![index];
                                   return SizedBox(
-                                    height: 30,
+                                    height: 40,
                                     child: Row(
                                       children: [
                                         SizedBox(
@@ -350,9 +341,14 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                           child: Checkbox(
                                             value: subtask.isCompleted,
                                             onChanged: (value) {
-                                              setState(() {
-                                                subtask.isCompleted = value!;
-                                              });
+                                              log(value.toString());
+                                              context
+                                                  .read<TodosCubit>()
+                                                  .updateSubtaskStatus(
+                                                    subtask,
+                                                    value!,
+                                                    todo,
+                                                  );
                                             },
                                           ),
                                         ),
@@ -367,12 +363,19 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                         ),
                                         const Spacer(),
                                         IconButton(
-                                          icon: const Icon(
-                                            Iconsax.trash,
-                                            color: DarkMoodAppColors
-                                                .kUnSelectedItemColor,
+                                          icon: SvgPicture.asset(
+                                            "assets/svgs/trash.svg",
+                                            height: 20,
+                                            colorFilter: const ColorFilter.mode(
+                                              Colors.red,
+                                              BlendMode.srcIn,
+                                            ),
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            context
+                                                .read<TodosCubit>()
+                                                .deleteSubtask(todo, subtask);
+                                          },
                                         ),
                                       ],
                                     ),

@@ -2,6 +2,7 @@ import 'package:planitt/core/models/subtask_model.dart';
 import 'package:planitt/core/models/to_do_model.dart';
 import 'package:planitt/core/services/abstract_storage_service.dart';
 import 'package:planitt/core/utils/constants.dart';
+import 'package:planitt/features/projects/data/models/project_model.dart';
 
 abstract class HomeDataSource {
   Future<List<ToDoModel>> getTodayTodos();
@@ -18,11 +19,9 @@ abstract class HomeDataSource {
   Future<void> updateTodo(String key, ToDoModel toDo);
   Future<void> addSubtask(ToDoModel toDo, SubtaskModel subtask);
   Future<void> deleteSubtask(String todoKey, int subtaskIndex);
-  Future<void> updateSubtask(
-    String todoKey,
-    int subtaskIndex,
-    bool isCompleted,
-  );
+  Future<void> deleteTodoFromProject(ToDoModel todo, ProjectModel project);
+  Future<void> updateSubtask(String todoKey, SubtaskModel subtask);
+  Future<void> deleteProjectTodos(String projectId);
 }
 
 class HomeDataSourceImpl implements HomeDataSource {
@@ -55,14 +54,6 @@ class HomeDataSourceImpl implements HomeDataSource {
   Future<List<ToDoModel>> getAllTodos() async {
     return storageService.getAll<ToDoModel>(boxName: todosBoxName);
   }
-
-  // @override
-  // Future<List<ToDoModel>> getOverdueTodos() async {
-  //   final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
-  //   return todos
-  //       .where((t) => t.dueDate != null && t.dueDate!.isBefore(DateTime.now()))
-  //       .toList();
-  // }
 
   @override
   Future<List<ToDoModel>> searchTodos(String query) async {
@@ -105,22 +96,18 @@ class HomeDataSourceImpl implements HomeDataSource {
   }
 
   @override
-  Future<void> updateSubtask(
-    String todoKey,
-    int subtaskIndex,
-    bool isCompleted,
-  ) async {
+  Future<void> updateSubtask(String subtaskKey, SubtaskModel subtask) async {
     await storageService.update(
       boxName: subtasksBoxName,
-      key: todoKey,
-      value: isCompleted,
+      key: subtaskKey,
+      value: subtask,
     );
   }
 
   @override
   Future<List<ToDoModel>> getTaskByProjectId(String projectId) async {
     final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
-    return todos.where((t) => t.project.id == projectId).toList();
+    return todos.where((t) => t.project?.id == projectId).toList();
   }
 
   @override
@@ -137,9 +124,27 @@ class HomeDataSourceImpl implements HomeDataSource {
 
       final matchProject = projects == null || projects.isEmpty
           ? true
-          : projects.contains(t.project.name);
+          : projects.contains(t.project?.name);
 
       return matchPriority && matchProject;
     }).toList();
+  }
+
+  @override
+  Future<void> deleteProjectTodos(String projectId) async {
+    final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
+    todos.where((t) => t.project?.id == projectId).toList();
+    await storageService.delete(boxName: todosBoxName, key: projectId);
+  }
+
+  @override
+  Future<void> deleteTodoFromProject(
+    ToDoModel todo,
+    ProjectModel project,
+  ) async {
+    final todos = await storageService.getAll<ToDoModel>(boxName: todosBoxName);
+    todos.where((t) => t.project?.id == project.id).toList();
+    todos.remove(todo);
+    await storageService.delete(boxName: todosBoxName, key: todo.key);
   }
 }

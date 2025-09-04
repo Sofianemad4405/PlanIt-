@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:planitt/core/theme/text_themes.dart';
+import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 import 'package:planitt/features/projects/presentation/views/project_details_Page_view_body.dart';
 import 'package:planitt/features/projects/presentation/views/projects_grid_view.dart';
 import 'package:planitt/features/projects/presentation/widgets/add_new_project.dart';
 import 'package:planitt/features/projects/presentation/widgets/add_new_project_dialog.dart';
+import 'package:planitt/features/projects/presentation/widgets/no_projects.dart';
 
 class ProjectsPageViewBody extends StatefulWidget {
   const ProjectsPageViewBody({super.key});
@@ -90,16 +92,23 @@ class ProjectsPageViewBodyState extends State<ProjectsPageViewBody>
               const Gap(20),
               BlocConsumer<ProjectsCubit, ProjectsState>(
                 builder: (context, state) {
-                  if (state is ProjectsLoadedInMainProjectsPage) {
-                    return ProjectsGridView(
-                      projects: state.projects,
-                      onTap: (project) {
-                        context.read<ProjectsCubit>().viewProjectDetails(
-                          project,
-                        );
-                      },
-                    );
-                  } else if (state is TodosLoadedInProjectDetailsPage) {
+                  if (state is ProjectsLoaded) {
+                    if (state.projects.isEmpty) {
+                      return NoProjects(
+                        text: 'Start your first one and make it count!'.tr(),
+                      );
+                    } else {
+                      log("projects");
+                      return ProjectsGridView(
+                        projects: state.projects,
+                        onTap: (project) {
+                          context.read<ProjectsCubit>().loadProjectsTodos(
+                            project,
+                          );
+                        },
+                      );
+                    }
+                  } else if (state is ProjectDetailsLoaded) {
                     return ProjectDetailsPageViewBody(project: state.project);
                   }
                   return const SizedBox();

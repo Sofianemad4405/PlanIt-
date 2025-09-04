@@ -17,12 +17,11 @@ final class TodosError extends TodosState {
   TodosError({required this.error});
 }
 
-final class TodosViewing extends TodosState {
+/// حالة لما todo واحد يتعرض للتفاصيل
+final class TodoViewing extends TodosState {
   final ToDoEntity todo;
-  TodosViewing({required this.todo});
+  TodoViewing({required this.todo});
 }
 
-final class TodosByProjectId extends TodosState {
-  final List<ToDoEntity> todos;
-  TodosByProjectId({required this.todos});
-}
+/// حالة نجاح إضافة Todo
+final class TodoAddedSuccess extends TodosState {}

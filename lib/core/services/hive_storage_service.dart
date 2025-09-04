@@ -31,7 +31,6 @@ class HiveServiceImpl implements AbstractStorageService {
     final box = _getBox<T>(boxName);
 
     if (value is ToDoModel) {
-      // نستخدم الـ key كـ hiveKey عشان يبقى سهل نعمل update/delete بعدين
       await (box as Box<ToDoModel>).put(value.key, value);
     } else if (value is ProjectModel) {
       await (box as Box<ProjectModel>).put(value.id, value);

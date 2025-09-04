@@ -1,3 +1,5 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/entities/project_entity.dart';
@@ -22,6 +24,24 @@ class Root extends StatefulWidget {
 
 class _RootState extends State<Root> {
   int _currentIndex = 0;
+  ConfettiController _confettiController = ConfettiController(
+    duration: const Duration(seconds: 1),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 1),
+    );
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,35 +64,68 @@ class _RootState extends State<Root> {
           });
         },
       ),
-      floatingActionButton: BlocBuilder<TodosCubit, TodosState>(
-        builder: (context, state) {
-          return FloatingActionButton(
-            shape: const CircleBorder(),
-            onPressed: () {
-              // context.read<ProjectsCubit>().init();
-              showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (context) {
-                  return AddTodoDialog(
-                    onSaved: (todo) {
-                      context.read<TodosCubit>().addTodo(todo);
-                      if (_currentIndex == 1) {
-                        context.read<ProjectsCubit>().loadProjectsTodos(
-                          context.read<ProjectsCubit>().selectedProject ??
-                              ProjectEntity.defaultProject(),
-                        );
-                      }
-                      context.pop();
-                    },
-                  );
-                },
-              );
+      floatingActionButton: Stack(
+        alignment: Alignment.center,
+        children: [
+          ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirectionality: BlastDirectionality.explosive,
+            shouldLoop: false,
+            emissionFrequency: 0.01,
+            numberOfParticles: 80,
+          ),
+          BlocListener<TodosCubit, TodosState>(
+            listener: (context, state) {
+              if (state is TodoAddedSuccess) {
+                _confettiController.play();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    duration: Duration(milliseconds: 800),
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    content: AwesomeSnackbarContent(
+                      title: 'Added!',
+                      message: 'Your task was added successfully.',
+                      contentType: ContentType.success,
+                    ),
+                  ),
+                );
+              } else if (state is TodosError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
-            backgroundColor: DarkMoodAppColors.kSelectedItemColor,
-            child: const Icon(Icons.add, color: AppColors.kWhiteColor),
-          );
-        },
+            child: FloatingActionButton(
+              shape: const CircleBorder(),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (context) {
+                    return AddTodoDialog(
+                      selectedDate: DateTime.now(),
+                      onSaved: (todo) {
+                        context.read<TodosCubit>().addTodo(todo);
+                        context.pop();
+                        context.read<ProjectsCubit>().isInProjectDetailsPage
+                            ? context.read<ProjectsCubit>().loadProjectsTodos(
+                                todo.project ?? ProjectEntity.defaultProject(),
+                              )
+                            : context.read<ProjectsCubit>().init();
+                      },
+                    );
+                  },
+                );
+              },
+              backgroundColor: DarkMoodAppColors.kSelectedItemColor,
+              child: const Icon(Icons.add, color: AppColors.kWhiteColor),
+            ),
+          ),
+        ],
       ),
     );
   }

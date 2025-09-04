@@ -1,11 +1,10 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
-import 'package:planitt/core/adapters/color_model.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
-import 'package:planitt/core/models/to_do_model.dart';
-import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/features/home/domain/repos/home_todos_repo.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
@@ -21,112 +20,59 @@ class ProjectsCubit extends Cubit<ProjectsState> {
   final ProjectsRepo projectsRepo;
   final HomeTodosRepo todosRepo;
   final TodosCubit todosCubit;
+
   List<ProjectEntity> projects = [];
   ProjectEntity? selectedProject;
   bool isInProjectDetailsPage = false;
 
   Future<void> init() async {
-    await seedDefaultProjects();
     await getAllProjects();
-    await loadProjectsTodos(selectedProject ?? ProjectEntity.defaultProject());
     if (projects.isNotEmpty) {
-      selectedProject = projects[0];
-    } else {
-      selectedProject = ProjectEntity.defaultProject();
-    }
-  }
-
-  Future<void> seedDefaultProjects() async {
-    final projectBox = await Hive.openBox<ProjectModel>(projectsBoxName);
-    if (projectBox.isEmpty) {
-      await projectBox.addAll([
-        ProjectModel(
-          name: "Inbox",
-          color: ColorModel(AppColors.kProjectIconColor1.value),
-          id: "0",
-          todos: [],
-          icon: projectsIcons[0],
-        ),
-        ProjectModel(
-          name: "Personal",
-          color: ColorModel(AppColors.kProjectIconColor2.value),
-          id: "1",
-          todos: [],
-          icon: projectsIcons[1],
-        ),
-        ProjectModel(
-          name: "Work",
-          color: ColorModel(AppColors.kProjectIconColor3.value),
-          id: "2",
-          todos: [],
-          icon: projectsIcons[2],
-        ),
-      ]);
-    }
-  }
-
-  void viewProjectDetails(ProjectEntity project) {
-    emit(TodosLoadedInProjectDetailsPage(project: project));
-  }
-
-  Future<void> loadProjectsTodos(ProjectEntity project) async {
-    try {
       final todos = await todosRepo.getAllTodos();
-      projects = projects.map((project) {
-        return project.copyWith(
-          todos: todos.where((todo) => todo.project.id == project.id).toList(),
+      projects = projects.map((p) {
+        return p.copyWith(
+          todos: todos.where((todo) => todo.project?.id == p.id).toList(),
         );
       }).toList();
-      if (isInProjectDetailsPage) {
-        emit(TodosLoadedInProjectDetailsPage(project: project));
-      } else {
-        emit(ProjectsLoadedInMainProjectsPage(projects: projects));
-      }
+      emit(ProjectsLoaded(projects: projects));
+    }
+  }
+
+  Future<void> getAllProjects() async {
+    try {
+      emit(ProjectsLoading());
+      final projectBox = await Hive.openBox<ProjectModel>(projectsBoxName);
+      final fetchedProjects = projectBox.values.map((p) {
+        return ProjectEntity(
+          name: p.name,
+          color: p.color,
+          id: p.id,
+          todos: p.toEntity().todos,
+          icon: p.icon,
+        );
+      }).toList();
+
+      projects = fetchedProjects;
+      emit(ProjectsLoaded(projects: projects));
     } catch (e) {
       emit(ProjectsError(error: e.toString()));
     }
   }
 
-  void toggleProjectsPageState(
-    bool isInProjectDetailsPage,
-    ProjectEntity project,
-  ) {
-    if (!isInProjectDetailsPage) {
-      emit(TodosLoadedInProjectDetailsPage(project: project));
-    } else {
-      emit(ProjectsLoadedInMainProjectsPage(projects: projects));
-    }
-  }
-
-  Future<void> getAllProjects() async {
-    final projectBox = await Hive.openBox<ProjectModel>(projectsBoxName);
-
-    final fetchedProjects = projectBox.values
-        .map(
-          (p) => ProjectEntity(
-            name: p.name,
-            color: p.color,
-            id: p.id,
-            todos: p.toEntity().todos,
-            icon: p.icon,
-          ),
-        )
-        .toList();
-
-    projects = fetchedProjects;
-
-    if (projects.isNotEmpty) {
-      selectedProject = ProjectEntity.defaultProject();
-    }
-
-    // emit(ProjectsLoadedInMainProjectsPage(projects: projects));
-  }
-
-  Future<void> deleteProject(ProjectEntity project) async {
+  Future<void> loadProjectsTodos(ProjectEntity project) async {
     try {
-      await projectsRepo.deleteProject(project);
-      projects.remove(project);
-      emit(ProjectsLoadedInMainProjectsPage(projects: projects));
+      final todos = await todosRepo.getAllTodos();
+      projects = projects.map((p) {
+        return p.copyWith(
+          todos: todos.where((todo) => todo.project?.id == p.id).toList(),
+        );
+      }).toList();
+
+      final updatedProject = projects.firstWhere(
+        (p) => p.id == project.id,
+        orElse: () => project,
+      );
+      emit(ProjectDetailsLoaded(project: updatedProject));
     } catch (e) {
       emit(ProjectsError(error: e.toString()));
     }
@@ -136,26 +82,31 @@ class ProjectsCubit extends Cubit<ProjectsState> {
     try {
       await projectsRepo.addProject(project);
       projects = [...projects, project];
-      emit(ProjectsLoadedInMainProjectsPage(projects: projects));
+      emit(ProjectsLoaded(projects: projects));
     } catch (e) {
       emit(ProjectsError(error: e.toString()));
     }
   }
 
-  void setIsInProjectDetailsPage(bool value) {
-    isInProjectDetailsPage = value;
-    emit(ProjectsLoadedInMainProjectsPage(projects: projects));
-  }
-
-  Future<void> deleteTodoFromProject(
-    ToDoEntity todo,
-    ProjectEntity project,
-  ) async {
+  Future<void> deleteProject(ProjectEntity project) async {
     try {
-      await todosCubit.deleteTodoFromProject(todo, project);
-      emit(TodosLoadedInProjectDetailsPage(project: project));
+      await projectsRepo.deleteProject(project);
+      projects.removeWhere((p) => p.id == project.id);
+      await todosCubit.deleteProjectTodos(project.id);
+      emit(ProjectsLoaded(projects: projects));
     } catch (e) {
       emit(ProjectsError(error: e.toString()));
+    }
+  }
+
+  void toggleProjectsPageState(
+    bool isInProjectDetailsPage,
+    ProjectEntity project,
+  ) {
+    if (isInProjectDetailsPage) {
+      emit(ProjectDetailsLoaded(project: project));
+    } else {
+      emit(ProjectsLoaded(projects: projects));
     }
   }
 }

@@ -1,10 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' as text;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 
-class NoTasks extends StatelessWidget {
-  const NoTasks({super.key, required this.text});
+class NoProjects extends StatelessWidget {
+  const NoProjects({super.key, required this.text});
   final String text;
 
   @override
@@ -20,7 +20,7 @@ class NoTasks extends StatelessWidget {
             height: 300,
           ),
           Text(
-            "No tasks found".tr(),
+            "You don’t have any projects yet".tr(),
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 24,

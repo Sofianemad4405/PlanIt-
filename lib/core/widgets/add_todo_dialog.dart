@@ -17,8 +17,15 @@ import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart
 import 'package:uuid/uuid.dart';
 
 class AddTodoDialog extends StatefulWidget {
-  const AddTodoDialog({super.key, required this.onSaved});
+  const AddTodoDialog({
+    super.key,
+    required this.onSaved,
+    required this.selectedDate,
+    this.selectedProject,
+  });
   final Function(ToDoEntity) onSaved;
+  final DateTime selectedDate;
+  final ProjectEntity? selectedProject;
 
   @override
   State<AddTodoDialog> createState() => _AddTodoDialogState();
@@ -30,15 +37,14 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   String selectedPriority = "Low";
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  late ProjectEntity selectedProject;
+  ProjectEntity? selectedProject;
 
   @override
   void initState() {
     super.initState();
-    selectedProject =
-        context.read<ProjectsCubit>().selectedProject ??
-        ProjectEntity.defaultProject();
-    log(selectedProject.name);
+    selectedProject = widget.selectedProject;
+    log(selectedProject?.name ?? "");
+    selectedDate = widget.selectedDate;
   }
 
   @override
@@ -47,258 +53,299 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
     final height = MediaQuery.of(context).size.height;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.all(16),
-        width: width * 0.8,
-        height: height * 0.46,
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      "Add Task".tr(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => context.pop(),
-                      child: const Icon(Iconsax.close_square),
-                    ),
-                  ],
+      child: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constrains) {
+            final maxW = constrains.maxWidth.clamp(280.0, 560.0);
+            final maxH = constrains.maxHeight.clamp(
+              200.0,
+              MediaQuery.of(context).size.height * 0.8,
+            );
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxW, maxHeight: maxH),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                const Gap(10),
-                CustomTextField(
-                  hint: "Title".tr(),
-                  prefixIcon: false,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Please enter a title".tr();
-                    }
-                    return null;
-                  },
-                  controller: titleController,
-                ),
-                const Gap(10),
-                CustomTextField(
-                  hint: "Description (Optional)".tr(),
-                  prefixIcon: false,
-                  isDesc: true,
-                  controller: descriptionController,
-                ),
-                const Gap(20),
-                CustomRow(
-                  mainIcon: const Icon(
-                    Iconsax.calendar_1,
-                    color: DarkMoodAppColors.kUnSelectedItemColor,
-                  ),
-                  smallIcon: const Icon(Iconsax.calendar_1, size: 16),
-                  text:
-                      "${selectedDate.day.toString()}/${selectedDate.month.toString()}/${selectedDate.year.toString()}",
-                  onTap: () {
-                    showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2100),
-                    ).then((value) {
-                      if (value != null) {
-                        setState(() {
-                          selectedDate = value;
-                        });
-                      }
-                    });
-                  },
-                ),
-                const Gap(10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Iconsax.flag,
-                            color: DarkMoodAppColors.kUnSelectedItemColor,
-                          ),
-                          const Gap(5),
-                          Expanded(
-                            child: Container(
-                              height: 35.97,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color:
-                                      Theme.of(context)
-                                          .inputDecorationTheme
-                                          .enabledBorder
-                                          ?.borderSide
-                                          .color ??
-                                      Colors.grey,
-                                ),
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                  child: DropdownButton<ProjectEntity>(
-                                    isExpanded: true,
-                                    value:
-                                        context
-                                            .watch<ProjectsCubit>()
-                                            .projects
-                                            .contains(selectedProject)
-                                        ? selectedProject
-                                        : null,
-                                    items: context
-                                        .watch<ProjectsCubit>()
-                                        .projects
-                                        .map((project) {
-                                          return DropdownMenuItem(
-                                            value: project,
-                                            child: Expanded(
-                                              child: Text(
-                                                project.name,
-                                                style: TextStyle(
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).colorScheme.onSurface,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                          );
-                                        })
-                                        .toList(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedProject = value!;
-                                      });
-                                    },
-                                  ),
-                                ),
+                padding: const EdgeInsets.all(16),
+                width: width * 0.8,
+                height: height * 0.46,
+                child: Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Add Task".tr(),
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Gap(20),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Iconsax.flag,
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () => context.pop(),
+                              child: const Icon(Iconsax.close_square),
+                            ),
+                          ],
+                        ),
+                        const Gap(10),
+                        CustomTextField(
+                          hint: "Title".tr(),
+                          prefixIcon: false,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please enter a title".tr();
+                            }
+                            return null;
+                          },
+                          controller: titleController,
+                        ),
+                        const Gap(10),
+                        CustomTextField(
+                          hint: "Description (Optional)".tr(),
+                          prefixIcon: false,
+                          isDesc: true,
+                          controller: descriptionController,
+                        ),
+                        const Gap(20),
+                        CustomRow(
+                          mainIcon: const Icon(
+                            Iconsax.calendar_1,
                             color: DarkMoodAppColors.kUnSelectedItemColor,
                           ),
-                          const Gap(5),
-                          Expanded(
-                            child: Container(
-                              height: 35.97,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color:
-                                      Theme.of(context)
-                                          .inputDecorationTheme
-                                          .enabledBorder
-                                          ?.borderSide
-                                          .color ??
-                                      Colors.grey,
-                                ),
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
+                          smallIcon: const Icon(Iconsax.calendar_1, size: 16),
+                          text:
+                              "${selectedDate.day.toString()}/${selectedDate.month.toString()}/${selectedDate.year.toString()}",
+                          onTap: () {
+                            showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2100),
+                            ).then((value) {
+                              if (value != null) {
+                                setState(() {
+                                  selectedDate = value;
+                                });
+                              }
+                            });
+                          },
+                        ),
+                        const Gap(10),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Iconsax.star,
+                                    color:
+                                        DarkMoodAppColors.kUnSelectedItemColor,
                                   ),
-                                  child: DropdownButton<String>(
-                                    value: selectedPriority,
-                                    items: priorities.map((priority) {
-                                      return DropdownMenuItem(
-                                        value: priority,
-                                        child: Text(
-                                          priority,
-                                          style: TextStyle(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onSurface,
+                                  const Gap(5),
+                                  Flexible(
+                                    child: Container(
+                                      height: 35.97,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color:
+                                              Theme.of(context)
+                                                  .inputDecorationTheme
+                                                  .enabledBorder
+                                                  ?.borderSide
+                                                  .color ??
+                                              Colors.grey,
+                                        ),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.surface,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          child: DropdownButton<String>(
+                                            value: selectedPriority,
+                                            items: priorities.map((priority) {
+                                              return DropdownMenuItem(
+                                                value: priority,
+                                                child: Text(
+                                                  priority,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSurface,
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedPriority = value!;
+                                              });
+                                            },
                                           ),
                                         ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedPriority = value!;
-                                      });
-                                    },
+                                      ),
+                                    ),
                                   ),
+                                ],
+                              ),
+                            ),
+                            const Gap(10),
+                            Flexible(
+                              child: Visibility(
+                                visible: context
+                                    .read<ProjectsCubit>()
+                                    .projects
+                                    .isNotEmpty,
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Iconsax.flag,
+                                      color: DarkMoodAppColors
+                                          .kUnSelectedItemColor,
+                                    ),
+                                    const Gap(5),
+                                    Flexible(
+                                      child: Container(
+                                        height: 35.97,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color:
+                                                Theme.of(context)
+                                                    .inputDecorationTheme
+                                                    .enabledBorder
+                                                    ?.borderSide
+                                                    .color ??
+                                                Colors.grey,
+                                          ),
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.surface,
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: DropdownButtonHideUnderline(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                            child: DropdownButton<ProjectEntity>(
+                                              isExpanded: true,
+                                              value:
+                                                  context
+                                                      .watch<ProjectsCubit>()
+                                                      .projects
+                                                      .contains(selectedProject)
+                                                  ? selectedProject
+                                                  : null,
+                                              items: context
+                                                  .watch<ProjectsCubit>()
+                                                  .projects
+                                                  .map((project) {
+                                                    return DropdownMenuItem(
+                                                      value: project,
+                                                      child: Flexible(
+                                                        child: Text(
+                                                          project.name,
+                                                          style: TextStyle(
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .onSurface,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                          maxLines: 1,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  })
+                                                  .toList(),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  selectedProject = value!;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const Gap(20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SaveOrCancelButton(
-                      isCancel: true,
-                      ontap: () => context.pop(),
-                    ),
-                    const Gap(10),
-                    SaveOrCancelButton(
-                      isCancel: false,
-                      ontap: () {
-                        if (_formKey.currentState!.validate()) {
-                          const uuid = Uuid();
-                          final toDo = ToDoEntity(
-                            key: uuid.v4(),
-                            title: titleController.text,
-                            description: descriptionController.text.isEmpty
-                                ? null
-                                : descriptionController.text,
-                            createdAt: DateTime.now(),
-                            dueDate: selectedDate,
-                            subtasks: [],
-                            priority: selectedPriority,
-                            project: selectedProject,
-                            isToday: isSameDay(selectedDate, DateTime.now()),
-                            isTomorrow: isSameDay(
-                              selectedDate,
-                              DateTime.now().add(const Duration(days: 1)),
+                          ],
+                        ),
+                        const Gap(20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SaveOrCancelButton(
+                              isCancel: true,
+                              ontap: () => context.pop(),
                             ),
-                            isOverdue: selectedDate.isBefore(DateTime.now()),
-                          );
-                          widget.onSaved(toDo);
-                        }
-                      },
+                            const Gap(10),
+                            SaveOrCancelButton(
+                              isCancel: false,
+                              ontap: () {
+                                if (_formKey.currentState!.validate()) {
+                                  const uuid = Uuid();
+                                  final toDo = ToDoEntity(
+                                    key: uuid.v4(),
+                                    title: titleController.text,
+                                    description:
+                                        descriptionController.text.isEmpty
+                                        ? null
+                                        : descriptionController.text,
+                                    createdAt: DateTime.now(),
+                                    dueDate: selectedDate,
+                                    subtasks: [],
+                                    priority: selectedPriority,
+                                    project: selectedProject,
+                                    isToday: isSameDay(
+                                      selectedDate,
+                                      DateTime.now(),
+                                    ),
+                                    isTomorrow: isSameDay(
+                                      selectedDate,
+                                      DateTime.now().add(
+                                        const Duration(days: 1),
+                                      ),
+                                    ),
+                                    isOverdue: selectedDate.isBefore(
+                                      DateTime.now(),
+                                    ),
+                                  );
+                                  widget.onSaved(toDo);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

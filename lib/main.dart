@@ -12,7 +12,6 @@ import 'package:easy_localization/easy_localization.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // init hive (via your service)
   await HiveServiceImpl().init();
   await EasyLocalization.ensureInitialized();
 
@@ -58,7 +57,7 @@ class _MyAppState extends State<MyApp> {
           localizationsDelegates: context.localizationDelegates,
           darkTheme: AppTheme.dark(context),
           theme: AppTheme.light(context),
-          themeMode: themeMode,
+          themeMode: context.watch<ThemeCubit>().state,
           home: const Root(),
         );
       },

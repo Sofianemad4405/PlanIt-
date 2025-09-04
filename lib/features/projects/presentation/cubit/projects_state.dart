@@ -7,22 +7,18 @@ final class ProjectsInitial extends ProjectsState {}
 
 final class ProjectsLoading extends ProjectsState {}
 
-final class ProjectsLoadedInMainProjectsPage extends ProjectsState {
+final class ProjectsLoaded extends ProjectsState {
   final List<ProjectEntity> projects;
-  ProjectsLoadedInMainProjectsPage({required this.projects});
-}
-
-final class TodosLoadedInProjectDetailsPage extends ProjectsState {
-  final ProjectEntity project;
-  TodosLoadedInProjectDetailsPage({required this.project});
-}
-
-final class ProjectsDetailsViewing extends ProjectsState {
-  final ProjectEntity project;
-  ProjectsDetailsViewing({required this.project});
+  ProjectsLoaded({required this.projects});
 }
 
 final class ProjectsError extends ProjectsState {
   final String error;
   ProjectsError({required this.error});
+}
+
+/// تفاصيل مشروع معين (ممكن يحتوي todos كمان)
+final class ProjectDetailsLoaded extends ProjectsState {
+  final ProjectEntity project;
+  ProjectDetailsLoaded({required this.project});
 }

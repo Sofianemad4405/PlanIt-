@@ -24,7 +24,7 @@ class _ProjectsGridViewState extends State<ProjectsGridView> {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 15,
-        crossAxisSpacing: 15,
+        crossAxisSpacing: 5,
         childAspectRatio: 1.5,
       ),
       itemCount: widget.projects.length,

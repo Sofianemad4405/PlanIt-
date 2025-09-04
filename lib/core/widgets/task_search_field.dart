@@ -30,10 +30,7 @@ class CustomTextField extends StatelessWidget {
       minLines: isDesc ? 3 : 1,
       maxLines: isDesc ? 5 : 1,
       textAlign: TextAlign.start,
-      style: TextStyle(
-        fontFamily: "Roboto",
-        color: Theme.of(context).colorScheme.onSurface,
-      ),
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       inputFormatters: keyboardType != null
           ? [
               FilteringTextInputFormatter.digitsOnly,
@@ -43,16 +40,25 @@ class CustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppNumbers.kEight),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.onSurface,
+            width: 0.05,
+          ),
         ),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppNumbers.kEight),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.onSurface,
+            width: 0.05,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppNumbers.kEight),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.onSurface,
+            width: 0.05,
+          ),
         ),
         hintText: hint,
         filled: true,
@@ -60,7 +66,7 @@ class CustomTextField extends StatelessWidget {
         hintStyle: TextStyle(
           color:
               Theme.of(context).inputDecorationTheme.hintStyle?.color ??
-              Colors.grey,
+              Theme.of(context).colorScheme.onSurface,
         ),
         prefixIcon: prefixIcon ? const Icon(Icons.search) : null,
       ),

@@ -23,7 +23,7 @@ class ToDoModelAdapter extends TypeAdapter<ToDoModel> {
       dueDate: fields[3] as DateTime?,
       priority: fields[4] as String,
       subtasks: (fields[5] as List?)?.cast<SubtaskModel>(),
-      project: fields[6] as ProjectModel,
+      project: fields[6] as ProjectModel?,
       isToday: fields[7] as bool,
       isTomorrow: fields[8] as bool,
       isOverdue: fields[9] as bool,

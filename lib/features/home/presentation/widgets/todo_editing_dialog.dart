@@ -7,6 +7,7 @@ import 'package:gap/gap.dart';
 import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:planitt/core/entities/subtask_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
@@ -31,9 +32,10 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
   // bool isEditing = false;
   TextEditingController newTitle = TextEditingController();
   TextEditingController newDesc = TextEditingController();
-  late ProjectEntity newProject;
+  ProjectEntity? newProject;
   late String newPriority;
   late DateTime newDueDate;
+  late List<SubtaskEntity> newSubtasks;
 
   final _formKey = GlobalKey<FormState>();
   List<ProjectEntity> projects = [];
@@ -45,19 +47,20 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
 
   _loadProjectsAndInitializeNewVars() {
     final box = Hive.box<ProjectModel>(projectsBoxName);
-    newProject = widget.toDo.project;
+    newProject = widget.toDo.project ?? ProjectEntity.defaultProject();
     newPriority = widget.toDo.priority;
     newDueDate = widget.toDo.dueDate ?? DateTime.now();
     newTitle.text = widget.toDo.title;
     newDesc.text = widget.toDo.description ?? "";
+    newSubtasks = widget.toDo.subtasks ?? [];
     setState(() {
       projects = box.values.map((model) => model.toEntity()).toList();
       if (projects.isNotEmpty) {
         final match = projects.firstWhere(
           (p) =>
-              p.name == newProject.name &&
-              p.color == newProject.color &&
-              p.icon == newProject.icon,
+              p.name == newProject?.name &&
+              p.color == newProject?.color &&
+              p.icon == newProject?.icon,
           orElse: () => projects.first,
         );
         newProject = match;
@@ -138,7 +141,7 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                     description: newDesc.text,
                                     createdAt: widget.toDo.createdAt,
                                     dueDate: newDueDate,
-                                    subtasks: widget.toDo.subtasks,
+                                    subtasks: newSubtasks,
                                     priority: newPriority,
                                     project: newProject,
                                     isToday: isSameDay(
@@ -368,7 +371,7 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                 title: "Created".tr(),
                                 data: Text(
                                   DateFormat(
-                                    'EEEE, MMMM d,\ny',
+                                    'E, MMMM d,y',
                                   ).format(widget.toDo.createdAt),
                                   style: TextStyle(
                                     color: Theme.of(
@@ -402,87 +405,122 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                               ),
                             ),
                             const Spacer(),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .4,
-                              child: Text(
-                                "${widget.toDo.subtasks?.where((e) => e.isCompleted).length}/${widget.toDo.subtasks?.length ?? 0} completed",
-                              ),
+                            BlocBuilder<TodosCubit, TodosState>(
+                              builder: (context, state) {
+                                if (state is TodosLoaded) {
+                                  final todo = state.todos
+                                      .where((e) => e.key == widget.toDo.key)
+                                      .first;
+                                  return SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * .4,
+                                    child: Text(
+                                      "${todo.subtasks?.where((e) => e.isCompleted).length}/${todo.subtasks?.length ?? 0} completed",
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
                             ),
                           ],
                         ),
                         const Gap(5),
 
                         // subtasks list
-                        if (widget.toDo.subtasks?.isEmpty ?? true)
-                          Text("No subtasks".tr())
-                        else
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: widget.toDo.subtasks!.length,
-                            itemBuilder: (context, index) {
-                              final subtask = widget.toDo.subtasks![index];
-                              return SizedBox(
-                                height: 30,
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                      child: Checkbox(
-                                        value: subtask.isCompleted,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            subtask.isCompleted = value!;
-                                          });
-                                        },
-                                      ),
+                        BlocBuilder<TodosCubit, TodosState>(
+                          builder: (context, state) {
+                            if (state is TodosLoaded) {
+                              final todo = state.todos
+                                  .where((todo) => todo.key == widget.toDo.key)
+                                  .first;
+                              if (todo.subtasks?.isEmpty ?? true) {
+                                return Text("No subtasks".tr());
+                              }
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: todo.subtasks!.length,
+                                itemBuilder: (context, index) {
+                                  final subtask = todo.subtasks![index];
+                                  return SizedBox(
+                                    height: 40,
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 20,
+                                          child: Checkbox(
+                                            value: subtask.isCompleted,
+                                            onChanged: (value) {
+                                              context
+                                                  .read<TodosCubit>()
+                                                  .updateSubtaskStatus(
+                                                    subtask,
+                                                    value!,
+                                                    todo,
+                                                  );
+                                            },
+                                          ),
+                                        ),
+                                        const Gap(5),
+                                        Text(
+                                          subtask.title,
+                                          style: TextStyle(
+                                            decoration: subtask.isCompleted
+                                                ? TextDecoration.lineThrough
+                                                : TextDecoration.none,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        IconButton(
+                                          icon: SvgPicture.asset(
+                                            "assets/svgs/trash.svg",
+                                          ),
+                                          onPressed: () {
+                                            context
+                                                .read<TodosCubit>()
+                                                .deleteSubtask(todo, subtask);
+                                          },
+                                        ),
+                                      ],
                                     ),
-                                    const Gap(5),
-                                    Text(
-                                      subtask.title,
-                                      style: TextStyle(
-                                        decoration: subtask.isCompleted
-                                            ? TextDecoration.lineThrough
-                                            : TextDecoration.none,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Iconsax.trash,
-                                        color: DarkMoodAppColors
-                                            .kUnSelectedItemColor,
-                                      ),
-                                      onPressed: () {
-                                        log(
-                                          "deleting subtask ${subtask.index} ${widget.toDo.key}",
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                  );
+                                },
                               );
-                            },
-                          ),
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          },
+                        ),
                         const Gap(15),
                         // add subtask
                         TextFormField(
                           controller: subtask,
                           decoration: InputDecoration(
                             fillColor: Theme.of(context).colorScheme.surface,
-                            suffixIcon: Consumer(
-                              builder: (context, ref, child) {
+                            suffixIcon: BlocBuilder<TodosCubit, TodosState>(
+                              builder: (context, state) {
                                 return IconButton(
                                   onPressed: () {
-                                    if (subtask.text.isNotEmpty) {
-                                      try {
-                                        subtask.clear();
-                                      } catch (e) {
-                                        log(e.toString());
-                                      }
+                                    if (state is TodosLoaded) {
+                                      final todos = state.todos;
+                                      final todo = todos.firstWhere(
+                                        (todo) => todo.key == widget.toDo.key,
+                                      );
+                                      context.read<TodosCubit>().addSubtask(
+                                        todo,
+                                        SubtaskEntity(
+                                          title: subtask.text,
+                                          isCompleted: false,
+                                          index: todo.subtasks!.length,
+                                        ),
+                                      );
+                                      newSubtasks = todo.subtasks!
+                                          .map((e) => e.copyWith())
+                                          .toList();
+                                      subtask.clear();
                                     }
                                   },
                                   icon: Icon(

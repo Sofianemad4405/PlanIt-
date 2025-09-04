@@ -8,9 +8,9 @@ class PreferencesService {
     await prefs.setString(_keyLanguage, languageCode);
   }
 
-  static Future<String?> getLanguage() async {
+  static Future<String> getLanguage() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyLanguage);
+    return prefs.getString(_keyLanguage) ?? "en";
   }
 
   // string setters and getters
@@ -19,14 +19,19 @@ class PreferencesService {
     await prefs.setString(key, value);
   }
 
+  static Future<String> getString(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key) ?? "";
+  }
+
   static Future<void> saveInt(String key, int value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(key, value);
   }
 
-  static Future<int?> getInt(String key) async {
+  static Future<int> getInt(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(key);
+    return prefs.getInt(key) ?? 0;
   }
 
   //bools
@@ -35,8 +40,8 @@ class PreferencesService {
     await prefs.setBool(key, value);
   }
 
-  static Future<bool?> getBool(String key) async {
+  static Future<bool> getBool(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(key);
+    return prefs.getBool(key) ?? false;
   }
 }

@@ -20,7 +20,7 @@ class ToDoModel extends HiveObject {
   @HiveField(5)
   final List<SubtaskModel>? subtasks;
   @HiveField(6)
-  final ProjectModel project;
+  final ProjectModel? project;
   @HiveField(7)
   final bool isToday;
   @HiveField(8)
@@ -39,7 +39,7 @@ class ToDoModel extends HiveObject {
     this.dueDate,
     this.priority = "Medium",
     this.subtasks,
-    required this.project,
+    this.project,
     this.isToday = false,
     this.isTomorrow = false,
     this.isOverdue = false,
@@ -57,7 +57,9 @@ class ToDoModel extends HiveObject {
       subtasks: entity.subtasks
           ?.map((e) => SubtaskModel.fromEntity(e))
           .toList(),
-      project: ProjectModel.fromEntity(entity.project),
+      project: entity.project == null
+          ? null
+          : ProjectModel.fromEntity(entity.project),
       isToday: entity.isToday,
       isTomorrow: entity.isTomorrow,
       isOverdue: entity.isOverdue,
@@ -74,7 +76,7 @@ class ToDoModel extends HiveObject {
       dueDate: dueDate,
       priority: priority,
       subtasks: subtasks?.map((e) => e.toEntity()).toList(),
-      project: project.toEntity(),
+      project: project?.toEntity(),
       isToday: isToday,
       isTomorrow: isTomorrow,
       isOverdue: isOverdue,

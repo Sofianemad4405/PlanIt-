@@ -36,13 +36,15 @@ class ProjectModel extends HiveObject {
     );
   }
 
-  factory ProjectModel.fromEntity(ProjectEntity entity) {
+  factory ProjectModel.fromEntity(ProjectEntity? entity) {
     return ProjectModel(
-      name: entity.name,
-      color: entity.color,
-      icon: entity.icon,
-      id: entity.id,
-      todos: entity.todos.map((todo) => ToDoModel.fromEntity(todo)).toList(),
+      name: entity?.name ?? "",
+      color: entity?.color ?? ColorModel(0),
+      icon: entity?.icon,
+      id: entity?.id ?? "",
+      todos:
+          entity?.todos.map((todo) => ToDoModel.fromEntity(todo)).toList() ??
+          [],
     );
   }
 }

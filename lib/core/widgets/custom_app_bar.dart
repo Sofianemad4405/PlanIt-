@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:planitt/app/controllers/language_controller.dart';
 import 'package:planitt/app/controllers/theme_controller.dart';
+import 'package:planitt/core/widgets/save_or_cancel_button.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -53,11 +54,109 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         const Gap(20),
-        SvgPicture.asset(
-          "assets/svgs/Settings.svg",
-          colorFilter: ColorFilter.mode(
-            Theme.of(context).appBarTheme.foregroundColor ?? Colors.white,
-            BlendMode.srcIn,
+        GestureDetector(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  height: MediaQuery.of(context).size.height * .3,
+                  width: MediaQuery.of(context).size.width * .3,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Settings".tr(),
+                            style: Theme.of(context).textTheme.headlineLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                ),
+                          ),
+                          const Gap(20),
+                          Row(
+                            children: [
+                              Text("Dark Mode".tr()),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: () =>
+                                    context.read<ThemeCubit>().toggleTheme(),
+                                child: SvgPicture.asset(
+                                  context.read<ThemeCubit>().state ==
+                                          ThemeMode.dark
+                                      ? "assets/svgs/light.svg"
+                                      : "assets/svgs/night.svg",
+                                  colorFilter: ColorFilter.mode(
+                                    Theme.of(
+                                          context,
+                                        ).appBarTheme.foregroundColor ??
+                                        Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Gap(20),
+                          Row(
+                            children: [
+                              Text("Arabic Language".tr()),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: () => LanguageController.changeLanguage(
+                                  context,
+                                  LanguageController.getLocale(context) ==
+                                          const Locale("ar")
+                                      ? const Locale("en")
+                                      : const Locale("ar"),
+                                ),
+                                child: SvgPicture.asset(
+                                  "assets/svgs/language.svg",
+                                  colorFilter: ColorFilter.mode(
+                                    Theme.of(
+                                          context,
+                                        ).appBarTheme.foregroundColor ??
+                                        Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SaveOrCancelButton(isCancel: false, ontap: () {}),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+          child: SvgPicture.asset(
+            "assets/svgs/Settings.svg",
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).appBarTheme.foregroundColor ?? Colors.white,
+              BlendMode.srcIn,
+            ),
           ),
         ),
         const Gap(20),

@@ -9,7 +9,7 @@ class ToDoEntity {
   final DateTime? dueDate;
   final String priority;
   final List<SubtaskEntity>? subtasks;
-  final ProjectEntity project;
+  final ProjectEntity? project;
   final bool isToday;
   final bool isTomorrow;
   final bool isOverdue;
@@ -22,7 +22,7 @@ class ToDoEntity {
     this.dueDate,
     this.priority = "Medium",
     this.subtasks,
-    required this.project,
+    this.project,
     this.isToday = false,
     this.isTomorrow = false,
     this.isOverdue = false,

@@ -36,7 +36,7 @@ class ProjectEntity {
   static ProjectEntity defaultProject() {
     return ProjectEntity(
       id: "0",
-      name: "Inbox",
+      name: "No Project",
       color: ColorModel(AppColors.kProjectIconColor1.toARGB32()),
       todos: [],
       icon: projectsIcons[0],

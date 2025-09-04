@@ -1,7 +1,7 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
@@ -24,7 +24,7 @@ class ProjectContainer extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -60,9 +60,18 @@ class ProjectContainer extends StatelessWidget {
                   onSelected: (value) {
                     if (value == 'delete') {
                       context.read<ProjectsCubit>().deleteProject(project);
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(const SnackBar(content: Text("Deleted")));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          duration: Duration(milliseconds: 500),
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          content: AwesomeSnackbarContent(
+                            title: 'Deleted!',
+                            message: 'Project was removed successfully.',
+                            contentType: ContentType.success,
+                          ),
+                        ),
+                      );
                     }
                   },
                   itemBuilder: (context) => [

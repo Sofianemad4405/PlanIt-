@@ -1,8 +1,11 @@
+import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/entities/subtask_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/core/models/subtask_model.dart';
 import 'package:planitt/core/models/to_do_model.dart';
 import 'package:planitt/features/home/data/data_sources/home_data_source.dart';
 import 'package:planitt/features/home/domain/repos/home_todos_repo.dart';
+import 'package:planitt/features/projects/data/models/project_model.dart';
 
 class HomeTodosRepoImpl implements HomeTodosRepo {
   final HomeDataSource homeDataSource;
@@ -83,8 +86,7 @@ class HomeTodosRepoImpl implements HomeTodosRepo {
   Future<void> updateSubtask(String todoKey, SubtaskEntity subtask) async {
     await homeDataSource.updateSubtask(
       todoKey,
-      subtask.index,
-      subtask.isCompleted,
+      SubtaskModel.fromEntity(subtask),
     );
   }
 
@@ -103,5 +105,18 @@ class HomeTodosRepoImpl implements HomeTodosRepo {
     return await homeDataSource
         .filterTodos(priorities: priorities, projects: projects)
         .then((todo) => todo.map((todo) => todo.toEntity()).toList());
+  }
+
+  @override
+  Future<void> deleteProjectTodos(String projectId) async {
+    await homeDataSource.deleteProjectTodos(projectId);
+  }
+
+  @override
+  Future<void> deleteTodoFromProject(ToDoEntity todo, ProjectEntity project) {
+    return homeDataSource.deleteTodoFromProject(
+      ToDoModel.fromEntity(todo),
+      ProjectModel.fromEntity(project),
+    );
   }
 }

@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
@@ -27,6 +29,7 @@ class _HomePageViewState extends State<HomePageViewBody>
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
   TextEditingController query = TextEditingController();
+  late Timer _timer;
 
   @override
   void initState() {
@@ -47,6 +50,9 @@ class _HomePageViewState extends State<HomePageViewBody>
 
     _controller.forward();
     context.read<TodosCubit>().init();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
   }
 
   @override
@@ -54,6 +60,7 @@ class _HomePageViewState extends State<HomePageViewBody>
     _tabController.dispose();
     _controller.dispose();
     query.dispose();
+    _timer.cancel();
     super.dispose();
   }
 
@@ -72,94 +79,117 @@ class _HomePageViewState extends State<HomePageViewBody>
                   horizontal: 20,
                   vertical: 10,
                 ),
-                child: Stack(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Text(
+                      getGreeting(),
+                      style: Theme.of(context).textTheme.headlineMedium!
+                          .copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      DateFormat(
+                        'EEEE، d MMMM',
+                        context.locale.toString(),
+                      ).format(DateTime.now()),
+                      style: const TextStyle(
+                        color: DarkMoodAppColors.kUnSelectedItemColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const Gap(10),
+                    BlocBuilder<TodosCubit, TodosState>(
+                      builder: (context, state) {
+                        if (state is TodosLoaded) {
+                          final now = DateTime.now();
+                          final today = DateTime(now.year, now.month, now.day);
+
+                          final todos = state.todos.where((todo) {
+                            final dueDate = DateTime(
+                              todo.dueDate!.year,
+                              todo.dueDate!.month,
+                              todo.dueDate!.day,
+                            );
+                            return dueDate.isBefore(today) && !todo.isFinished;
+                          }).toList();
+                          return todos.isNotEmpty
+                              ? Text(
+                                  "${todos.length} ${"overdue tasks".tr()}",
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : const SizedBox();
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                    const Gap(20),
+                    Row(
                       children: [
-                        Text(
-                          "Good Evening".tr(),
-                          style: Theme.of(context).textTheme.headlineMedium!
-                              .copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          DateFormat(
-                            'EEEE، d MMMM',
-                            context.locale.toString(),
-                          ).format(DateTime.now()),
-                          style: const TextStyle(
-                            color: DarkMoodAppColors.kUnSelectedItemColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
+                        Expanded(
+                          child: SizedBox(
+                            height: 50,
+                            child: CustomTextField(
+                              controller: query,
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  context.read<TodosCubit>().getAllTodos();
+                                } else {
+                                  context.read<TodosCubit>().searchTodos(value);
+                                }
+                              },
+                              hint: "Search".tr(),
+                              prefixIcon: true,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: SizedBox(
-                                height: 50,
-                                child: CustomTextField(
-                                  controller: query,
-                                  onChanged: (value) {
-                                    if (value.isEmpty) {
-                                      context.read<TodosCubit>().getAllTodos();
-                                    } else {
-                                      context.read<TodosCubit>().searchTodos(
-                                        value,
-                                      );
-                                    }
-                                  },
-                                  hint: "Search".tr(),
-                                  prefixIcon: true,
+                        const SizedBox(width: 10),
+                        Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).inputDecorationTheme.fillColor,
+                            borderRadius: BorderRadius.circular(
+                              AppNumbers.kEight,
+                            ),
+                            // border: Border.all(
+                            //   color:
+                            //       Theme.of(context)
+                            //           .inputDecorationTheme
+                            //           .enabledBorder
+                            //           ?.borderSide
+                            //           .color ??
+                            //       Colors.grey,
+                            //   width: 0,
+                            // ),
+                          ),
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  showFilter = !showFilter;
+                                });
+                              },
+                              child: SvgPicture.asset(
+                                "assets/svgs/filter.svg",
+                                height: 25,
+                                width: 25,
+                                colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.onSurface,
+                                  BlendMode.srcIn,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).inputDecorationTheme.fillColor,
-                                borderRadius: BorderRadius.circular(
-                                  AppNumbers.kEight,
-                                ),
-                                border: Border.all(
-                                  color:
-                                      Theme.of(context)
-                                          .inputDecorationTheme
-                                          .enabledBorder
-                                          ?.borderSide
-                                          .color ??
-                                      Colors.grey,
-                                ),
-                              ),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showFilter = !showFilter;
-                                    });
-                                  },
-                                  child: SvgPicture.asset(
-                                    "assets/svgs/filter.svg",
-                                    height: 25,
-                                    width: 25,
-                                    colorFilter: ColorFilter.mode(
-                                      Theme.of(context).colorScheme.onSurface,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
@@ -221,6 +251,15 @@ class _HomePageViewState extends State<HomePageViewBody>
                                   TodoReadDialog(toDoKey: todo.key),
                             );
                           },
+                          onTaskCompleted: (todo) {
+                            final newTodo = todo.copyWith(
+                              isFinished: !todo.isFinished,
+                            );
+                            context.read<TodosCubit>().updateTodo(
+                              todo.key,
+                              newTodo,
+                            );
+                          },
                         ),
                   upcomingTodos.isEmpty
                       ? const NoTasks(text: "No upcoming tasks")
@@ -235,6 +274,15 @@ class _HomePageViewState extends State<HomePageViewBody>
                               context: context,
                               builder: (context) =>
                                   TodoReadDialog(toDoKey: todo.key),
+                            );
+                          },
+                          onTaskCompleted: (todo) {
+                            final newTodo = todo.copyWith(
+                              isFinished: !todo.isFinished,
+                            );
+                            context.read<TodosCubit>().updateTodo(
+                              todo.key,
+                              newTodo,
                             );
                           },
                         ),
@@ -252,6 +300,15 @@ class _HomePageViewState extends State<HomePageViewBody>
                                   TodoReadDialog(toDoKey: todo.key),
                             );
                           },
+                          onTaskCompleted: (todo) {
+                            final newTodo = todo.copyWith(
+                              isFinished: !todo.isFinished,
+                            );
+                            context.read<TodosCubit>().updateTodo(
+                              todo.key,
+                              newTodo,
+                            );
+                          },
                         ),
                 ],
               );
@@ -260,5 +317,16 @@ class _HomePageViewState extends State<HomePageViewBody>
         ),
       ),
     );
+  }
+}
+
+String getGreeting() {
+  final hour = DateTime.now().hour;
+  if (hour < 12) {
+    return "Good Morning".tr();
+  } else if (hour < 18) {
+    return "Good Afternoon".tr();
+  } else {
+    return "Good Evening".tr();
   }
 }
