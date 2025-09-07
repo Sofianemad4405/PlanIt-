@@ -379,6 +379,21 @@ class _HomePageViewState extends State<HomePageViewBody>
               final List<ToDoEntity> allTodos = state is TodosLoaded
                   ? state.todos
                   : [];
+              todayTodos.sort((a, b) {
+                final aIndex = priorities.indexOf(a.priority);
+                final bIndex = priorities.indexOf(b.priority);
+                return bIndex.compareTo(aIndex);
+              });
+              upcomingTodos.sort((a, b) {
+                final aIndex = priorities.indexOf(a.priority);
+                final bIndex = priorities.indexOf(b.priority);
+                return bIndex.compareTo(aIndex);
+              });
+              allTodos.sort((a, b) {
+                final aIndex = priorities.indexOf(a.priority);
+                final bIndex = priorities.indexOf(b.priority);
+                return bIndex.compareTo(aIndex);
+              });
               return TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,

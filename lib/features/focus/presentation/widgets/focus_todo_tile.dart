@@ -23,10 +23,19 @@ class FocusTodoTile extends StatelessWidget {
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       minTileHeight: 80,
-      title: Text(todo.title),
+      title: Text(
+        todo.title,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       subtitle: Text(
         "${"Due".tr()} : ${DateFormat("yyyy/MM/dd", context.locale.toString()).format(todo.dueDate ?? DateTime.now())}",
-        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       trailing: GestureDetector(
         onTap: () {

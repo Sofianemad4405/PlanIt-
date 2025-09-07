@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/app/controllers/theme_controller.dart';
+import 'package:planitt/app/screens/splash.dart';
 import 'package:planitt/app/themes/app_theme.dart';
 import 'package:planitt/core/services/get_it_service.dart';
 import 'package:planitt/core/services/hive_storage_service.dart';
@@ -58,7 +59,7 @@ class _MyAppState extends State<MyApp> {
           darkTheme: AppTheme.dark(context),
           theme: AppTheme.light(context),
           themeMode: context.watch<ThemeCubit>().state,
-          home: const Root(),
+          home: const Splash(),
         );
       },
     );

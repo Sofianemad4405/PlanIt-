@@ -3,7 +3,7 @@ import 'package:planitt/core/adapters/color_model.dart';
 
 class AppColors {
   // ثابتة ومش مرتبطة بالثيم
-  static const Color kHighPriorityColor = Color(0xFF943211);
+  static const Color kHighPriorityColor = Color.fromARGB(255, 0, 255, 0);
   static const Color kMediumPriorityColor = Color(0xFF1D3DA8);
   static const Color kLowPriorityColor = Color(0xFF353E4E);
   static const Color kUrgentPriorityColor = Color(0xFF931A1A);
