@@ -24,6 +24,7 @@ class Root extends StatefulWidget {
 
 class _RootState extends State<Root> {
   int _currentIndex = 0;
+  PageController _pageController = PageController();
   ConfettiController _confettiController = ConfettiController(
     duration: const Duration(seconds: 1),
   );
@@ -34,12 +35,25 @@ class _RootState extends State<Root> {
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 1),
     );
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
     _confettiController.dispose();
+    _pageController.dispose();
     super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -47,22 +61,19 @@ class _RootState extends State<Root> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(),
-      body: _currentIndex == 0
-          ? const HomePageViewBody()
-          : _currentIndex == 1
-          ? const ProjectsPageViewBody()
-          : _currentIndex == 2
-          ? const CalendarPageViewBody()
-          : _currentIndex == 3
-          ? const FocusPageViewBody()
-          : const HomePageViewBody(),
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: _pageController,
+        children: const [
+          HomePageViewBody(),
+          ProjectsPageViewBody(),
+          CalendarPageViewBody(),
+          FocusPageViewBody(),
+        ],
+      ),
       bottomNavigationBar: CustomNavBar(
         currentIndex: _currentIndex,
-        onItemTapped: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onItemTapped: _onItemTapped,
       ),
       floatingActionButton: Stack(
         alignment: Alignment.center,
@@ -117,6 +128,10 @@ class _RootState extends State<Root> {
                               )
                             : context.read<ProjectsCubit>().init();
                       },
+                      selectedProject:
+                          context.read<ProjectsCubit>().isInProjectDetailsPage
+                          ? context.read<ProjectsCubit>().selectedProject
+                          : null,
                     );
                   },
                 );

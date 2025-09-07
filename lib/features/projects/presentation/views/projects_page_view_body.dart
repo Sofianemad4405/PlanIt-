@@ -29,7 +29,7 @@ class ProjectsPageViewBodyState extends State<ProjectsPageViewBody>
     loadProjects();
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
 
@@ -102,6 +102,10 @@ class ProjectsPageViewBodyState extends State<ProjectsPageViewBody>
                       return ProjectsGridView(
                         projects: state.projects,
                         onTap: (project) {
+                          context.read<ProjectsCubit>().isInProjectDetailsPage =
+                              true;
+                          context.read<ProjectsCubit>().selectedProject =
+                              project;
                           context.read<ProjectsCubit>().loadProjectsTodos(
                             project,
                           );

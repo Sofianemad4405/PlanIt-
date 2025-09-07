@@ -117,9 +117,6 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                     await context.read<TodosCubit>().deleteTodo(
                                       todo,
                                     );
-                                    // if (mounted) {
-                                    //   context.pop();
-                                    // }
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/svgs/trash.svg",

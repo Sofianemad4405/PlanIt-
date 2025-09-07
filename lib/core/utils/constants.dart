@@ -17,3 +17,5 @@ const String projectsBoxName = "projects";
 const String subtasksBoxName = "subtasks";
 const String focusDurationKey = "focusDuration";
 const String breakDurationKey = "breakDuration";
+const String arabicFont = "IBM Plex Sans Arabic";
+const String englishFont = "Inter";

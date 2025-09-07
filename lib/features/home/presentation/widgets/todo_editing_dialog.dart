@@ -283,9 +283,7 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                                       ),
                                       child: DropdownButton<String>(
                                         value: newPriority,
-                                        items: ["Low", "Medium", "High"].map((
-                                          p,
-                                        ) {
+                                        items: priorities.map((p) {
                                           return DropdownMenuItem(
                                             value: p,
                                             child: Text(p),

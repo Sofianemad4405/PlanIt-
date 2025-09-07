@@ -10,11 +10,13 @@ import 'package:intl/intl.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
+import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/home/presentation/widgets/no_tasks.dart';
 import 'package:planitt/features/home/presentation/widgets/todo_read_dialog.dart';
 import 'package:planitt/features/home/presentation/widgets/todos_list_view.dart';
+import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 
 class HomePageViewBody extends StatefulWidget {
   const HomePageViewBody({super.key});
@@ -34,9 +36,13 @@ class _HomePageViewState extends State<HomePageViewBody>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      animationDuration: const Duration(milliseconds: 20),
+    );
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
 
@@ -65,6 +71,164 @@ class _HomePageViewState extends State<HomePageViewBody>
   }
 
   bool showFilter = false;
+  OverlayEntry? _overlayEntry;
+  Set<String> selectedPriorities = {};
+  Set<String> selectedProjects = {};
+
+  void _toggleOverlay() {
+    if (_overlayEntry == null) {
+      _showOverlay();
+    } else {
+      _removeOverlay();
+    }
+  }
+
+  void _showOverlay() {
+    final overlay = Overlay.of(context);
+    final renderBox = context.findRenderObject() as RenderBox;
+    final position = renderBox.localToGlobal(Offset.zero);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _removeOverlay,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          Positioned(
+            left: 20,
+            top: 300,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                width: 300,
+                height: 400,
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Filter Todos".tr(),
+                        style: Theme.of(context).textTheme.titleMedium!
+                            .copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                      ),
+                      const Gap(10),
+                      Text(
+                        "Priorities".tr(),
+                        style: Theme.of(context).textTheme.titleMedium!
+                            .copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[600],
+                            ),
+                      ),
+                      const Gap(10),
+                      ...priorities.map((p) {
+                        return StatefulBuilder(
+                          builder: (context, setStateOverlay) {
+                            return CheckboxListTile(
+                              contentPadding: EdgeInsets.zero,
+                              splashRadius: 0,
+                              overlayColor: const WidgetStatePropertyAll(
+                                Colors.transparent,
+                              ),
+                              hoverColor: Colors.transparent,
+                              tileColor: Colors.transparent,
+                              dense: true,
+                              checkColor: Theme.of(
+                                context,
+                              ).colorScheme.onSurface,
+                              value: selectedPriorities.contains(p),
+                              title: Text(p),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              onChanged: (checked) {
+                                setState(() {
+                                  if (checked == true) {
+                                    selectedPriorities.add(p);
+                                  } else {
+                                    selectedPriorities.remove(p);
+                                  }
+                                });
+                                context.read<TodosCubit>().filterTodos(
+                                  projects: selectedProjects.toList(),
+                                  priorities: selectedPriorities.toList(),
+                                );
+                                setStateOverlay(() {});
+                              },
+                            );
+                          },
+                        );
+                      }),
+                      const Gap(10),
+                      Text(
+                        "Projects".tr(),
+                        style: Theme.of(context).textTheme.titleMedium!
+                            .copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[600],
+                            ),
+                      ),
+                      const Gap(10),
+                      ...context.read<ProjectsCubit>().projects.map((p) {
+                        return StatefulBuilder(
+                          builder: (context, setStateOverlay) {
+                            return CheckboxListTile(
+                              contentPadding: EdgeInsets.zero,
+                              splashRadius: 0,
+                              overlayColor: const WidgetStatePropertyAll(
+                                Colors.transparent,
+                              ),
+                              hoverColor: Colors.transparent,
+                              tileColor: Colors.transparent,
+                              dense: true,
+                              checkColor: Theme.of(
+                                context,
+                              ).colorScheme.onSurface,
+                              value: selectedProjects.contains(p.name),
+                              title: Text(p.name),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              onChanged: (checked) {
+                                setState(() {
+                                  if (checked == true) {
+                                    selectedProjects.add(p.name);
+                                  } else {
+                                    selectedProjects.remove(p.name);
+                                  }
+                                });
+                                context.read<TodosCubit>().filterTodos(
+                                  projects: selectedProjects.toList(),
+                                  priorities: selectedPriorities.toList(),
+                                );
+                                setStateOverlay(() {});
+                              },
+                            );
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    overlay.insert(_overlayEntry!);
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,16 +270,8 @@ class _HomePageViewState extends State<HomePageViewBody>
                     BlocBuilder<TodosCubit, TodosState>(
                       builder: (context, state) {
                         if (state is TodosLoaded) {
-                          final now = DateTime.now();
-                          final today = DateTime(now.year, now.month, now.day);
-
                           final todos = state.todos.where((todo) {
-                            final dueDate = DateTime(
-                              todo.dueDate!.year,
-                              todo.dueDate!.month,
-                              todo.dueDate!.day,
-                            );
-                            return dueDate.isBefore(today) && !todo.isFinished;
+                            return todo.isOverdue && !todo.isFinished;
                           }).toList();
                           return todos.isNotEmpty
                               ? Text(
@@ -151,34 +307,24 @@ class _HomePageViewState extends State<HomePageViewBody>
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).inputDecorationTheme.fillColor,
-                            borderRadius: BorderRadius.circular(
-                              AppNumbers.kEight,
+                        GestureDetector(
+                          onTap: _toggleOverlay,
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color:
+                                  selectedPriorities.isNotEmpty ||
+                                      selectedProjects.isNotEmpty
+                                  ? AppColors.kAddTodoColor
+                                  : Theme.of(
+                                      context,
+                                    ).inputDecorationTheme.fillColor,
+                              borderRadius: BorderRadius.circular(
+                                AppNumbers.kEight,
+                              ),
                             ),
-                            // border: Border.all(
-                            //   color:
-                            //       Theme.of(context)
-                            //           .inputDecorationTheme
-                            //           .enabledBorder
-                            //           ?.borderSide
-                            //           .color ??
-                            //       Colors.grey,
-                            //   width: 0,
-                            // ),
-                          ),
-                          child: Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  showFilter = !showFilter;
-                                });
-                              },
+                            child: Center(
                               child: SvgPicture.asset(
                                 "assets/svgs/filter.svg",
                                 height: 25,

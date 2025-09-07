@@ -24,9 +24,14 @@ class _ControllerButtonState extends State<ControllerButton> {
         height: 50,
         width: 50,
         decoration: BoxDecoration(
+          border: Border.all(
+            color: widget.isPauseAndRunning
+                ? const Color(0xFF4F46E5)
+                : Theme.of(context).colorScheme.onSurface,
+          ),
           color: widget.isPauseAndRunning
               ? const Color(0xFF4F46E5)
-              : const Color(0xFF1F2937),
+              : Theme.of(context).colorScheme.surface,
           shape: BoxShape.circle,
         ),
         child: Center(

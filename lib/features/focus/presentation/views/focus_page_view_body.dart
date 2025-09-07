@@ -23,7 +23,7 @@ class FocusPageViewBody extends StatefulWidget {
 }
 
 class _FocusPageViewBodyState extends State<FocusPageViewBody>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final _formKey = GlobalKey<FormState>();
   bool settingsShown = false;
   TextEditingController focusController = TextEditingController();
@@ -44,12 +44,12 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     getTimersValues();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
 
@@ -113,7 +113,11 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SlideTransition(
       position: _offsetAnimation,
       child: Padding(
@@ -122,7 +126,6 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
           child: Form(
             key: _formKey,
             child: Column(
-              /// focus mode
               children: [
                 const Gap(20),
                 Row(
@@ -159,8 +162,8 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
                     focusController: focusController,
                     breakController: breakController,
                     onFocusChanged: (value) {
-                      focusDuration = int.parse(value) * 60;
                       setState(() {
+                        focusDuration = int.parse(value) * 60;
                         duration = focusDuration;
                       });
                       PreferencesService.saveInt(
@@ -169,9 +172,8 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
                       );
                     },
                     onbreakChanged: (value) {
-                      breakDuration = int.parse(value) * 60;
                       setState(() {
-                        duration = breakDuration;
+                        breakDuration = int.parse(value) * 60;
                       });
                       PreferencesService.saveInt(
                         Constants.breakDurationKey,
@@ -185,7 +187,9 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
                 /// circular timer
                 CircularTimer(
                   focusMode: focusMode,
-                  duration: duration,
+                  duration: focusMode == FocusMode.breakTime
+                      ? breakDuration
+                      : focusDuration,
                   countDownController: countDownController,
                   isTimerRunning: isTimerRunning,
                   isTimerRunningAndNowPaused: isTimerRunningAndNowPaused,

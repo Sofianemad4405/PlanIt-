@@ -28,6 +28,7 @@ class TaskListtile extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return Dismissible(
+      movementDuration: const Duration(milliseconds: 100),
       key: ValueKey(toDo.key),
       direction: DismissDirection.endToStart,
       background: Container(
@@ -40,7 +41,7 @@ class TaskListtile extends StatelessWidget {
         onDelete();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            duration: Duration(milliseconds: 800),
+            duration: Duration(milliseconds: 100),
             backgroundColor: Colors.transparent,
             elevation: 0,
             content: AwesomeSnackbarContent(

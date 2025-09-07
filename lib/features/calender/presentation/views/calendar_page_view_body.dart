@@ -29,7 +29,7 @@ class _CalendarPageViewBodyState extends State<CalendarPageViewBody>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
 

@@ -79,11 +79,11 @@ class CircularTimer extends StatelessWidget {
                 controller: countDownController,
                 width: 200,
                 height: 192,
-                ringColor: Colors.grey[800]!,
+                ringColor: Colors.grey[400]!,
                 fillColor: focusMode == FocusMode.breakTime
                     ? const Color(0xFF10B981)
                     : const Color(0xFF4F46E5),
-                strokeWidth: 12.0,
+                strokeWidth: 5.0,
                 strokeCap: StrokeCap.round,
                 textStyle: TextStyle(
                   fontSize: 30.0,
@@ -108,13 +108,25 @@ class CircularTimer extends StatelessWidget {
                   ),
                   const Gap(10),
                   ControllerButton(
-                    icon: SvgPicture.asset("assets/svgs/restart.svg"),
+                    icon: SvgPicture.asset(
+                      "assets/svgs/restart.svg",
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                     onPressed: onReset,
                     isPauseAndRunning: false,
                   ),
                   const Gap(10),
                   ControllerButton(
-                    icon: SvgPicture.asset("assets/svgs/shift.svg"),
+                    icon: SvgPicture.asset(
+                      "assets/svgs/shift.svg",
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                     onPressed: onShiftMode,
                     isPauseAndRunning: false,
                   ),
