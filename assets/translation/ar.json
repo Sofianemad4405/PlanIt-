@@ -69,5 +69,13 @@
     "Arabic Language":"اللغة العربية",
     "Settings":"الإعدادات",
     "Filter Todos":"تصفية المهام",
-    "Priorities":"الأولويات"
+    "Priorities":"الأولويات",
+    "Theme":"الوضع",
+    "Light":"نهاري",
+    "Night":"ليلي",
+    "Your name":"اسمك",
+    "Language":"اللغة",
+    "Next":"التالي",
+    "Please enter your name":"من فضلك ادخل الاسم",
+    "Enter your name":"ادخل الاسم"
 }

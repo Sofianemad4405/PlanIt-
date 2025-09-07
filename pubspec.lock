@@ -225,6 +225,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.11"
+  dots_indicator:
+    dependency: "direct main"
+    description:
+      name: dots_indicator
+      sha256: c070af5058a084ba7b354df4b4c26c719595d70a3531eea6edd8af8716684ba3
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
+  dropdown_button2:
+    dependency: "direct main"
+    description:
+      name: dropdown_button2
+      sha256: b0fe8d49a030315e9eef6c7ac84ca964250155a6224d491c1365061bc974a9e1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.9"
   easy_localization:
     dependency: "direct main"
     description:
@@ -962,6 +978,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  translator:
+    dependency: "direct main"
+    description:
+      name: translator
+      sha256: fb28ada8b29931f5142907bac62dda375b14a60a57ec72ed37b78e3e97a7047b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4+1"
   typed_data:
     dependency: transitive
     description:

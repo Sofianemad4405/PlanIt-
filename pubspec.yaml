@@ -11,6 +11,8 @@ dependencies:
   circular_countdown_timer: ^0.2.4
   confetti: ^0.8.0
   cupertino_icons: ^1.0.8
+  dots_indicator: ^4.0.1
+  dropdown_button2: ^2.3.9
   easy_localization: ^3.0.8
   flutter:
     sdk: flutter
@@ -35,6 +37,7 @@ dependencies:
   shared_preferences: ^2.5.3
   syncfusion_flutter_calendar: ^30.2.5
   timezone: ^0.10.1
+  translator: ^1.0.4+1
   uuid: ^4.5.1
 
 dev_dependencies:

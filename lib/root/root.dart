@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
+import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/core/widgets/add_todo_dialog.dart';
 import 'package:planitt/core/widgets/custom_app_bar.dart';
@@ -17,6 +18,7 @@ import 'package:planitt/features/projects/presentation/views/projects_page_view_
 
 class Root extends StatefulWidget {
   const Root({super.key});
+  static const String routeName = kOnBoardingRoute;
 
   @override
   State<Root> createState() => _RootState();

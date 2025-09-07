@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/app/controllers/theme_controller.dart';
 import 'package:planitt/app/screens/splash.dart';
+import 'package:planitt/app/screens/user_data_and_preferences_screen.dart';
 import 'package:planitt/app/themes/app_theme.dart';
+import 'package:planitt/core/services/app_router.dart';
 import 'package:planitt/core/services/get_it_service.dart';
 import 'package:planitt/core/services/hive_storage_service.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
@@ -52,6 +54,7 @@ class _MyAppState extends State<MyApp> {
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, themeMode) {
         return MaterialApp(
+          onGenerateRoute: AppRouter.generateRoute,
           debugShowCheckedModeBanner: false,
           locale: context.locale,
           supportedLocales: context.supportedLocales,
@@ -59,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           darkTheme: AppTheme.dark(context),
           theme: AppTheme.light(context),
           themeMode: context.watch<ThemeCubit>().state,
-          home: const Splash(),
+          home: const UserDataAndPreferencesScreen(),
         );
       },
     );
