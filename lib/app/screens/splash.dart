@@ -12,17 +12,58 @@ class Splash extends StatefulWidget {
   State<Splash> createState() => _SplashState();
 }
 
-class _SplashState extends State<Splash> {
+class _SplashState extends State<Splash> with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale1;
+  late Animation<double> _scale2;
+  late Animation<double> _scale3;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const Root()),
-      // );
-    });
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3), // حركة كل دورة
+    )..repeat();
+
+    // كل لاير يطلع بسرعة مختلفة
+    _scale1 = Tween<double>(
+      begin: 1.0,
+      end: 1.5,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _scale2 = Tween<double>(
+      begin: 1.0,
+      end: 1.8,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _scale3 = Tween<double>(
+      begin: 1.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    // // بعد 10 ثواني يروح للـ RootPage
+    // Future.delayed(const Duration(seconds: 10), () {
+    //   Navigator.pushReplacementNamed(context, "/root"); // غير "/root" براوتك
+    // });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _buildLayer(Animation<double> animation, String asset) {
+    return ScaleTransition(
+      scale: animation,
+      child: SvgPicture.asset(
+        asset,
+        colorFilter: ColorFilter.mode(
+          Theme.of(context).colorScheme.onSurface,
+          BlendMode.srcIn,
+        ),
+      ),
+    );
   }
 
   @override
@@ -32,56 +73,29 @@ class _SplashState extends State<Splash> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            SvgPicture.asset(
-              "assets/svgs/l1.svg",
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
-            SvgPicture.asset(
-              "assets/svgs/l2.svg",
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
-            SvgPicture.asset(
-              "assets/svgs/l4.svg",
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
+            _buildLayer(_scale1, "assets/svgs/l1.svg"),
+            _buildLayer(_scale2, "assets/svgs/l2.svg"),
+            _buildLayer(_scale3, "assets/svgs/l3.svg"),
+
+            // Logo + Text
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SvgPicture.asset(
                   "assets/svgs/logo.svg",
-                  height: 100,
-                  width: 100,
+                  height: 90,
                   colorFilter: ColorFilter.mode(
                     Theme.of(context).colorScheme.onSurface,
                     BlendMode.srcIn,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 Text(
                   "PlanIt",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 30,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                ),
-                Text(
-                  "Organize your world",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 2,
                   ),
                 ),
               ],
