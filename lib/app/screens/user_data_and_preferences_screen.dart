@@ -5,12 +5,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:planitt/app/controllers/language_controller.dart';
 import 'package:planitt/app/controllers/theme_controller.dart';
-import 'package:planitt/app/screens/on_boarding.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
 import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
+import 'package:planitt/root/root.dart';
 
 class UserDataAndPreferencesScreen extends StatefulWidget {
   const UserDataAndPreferencesScreen({super.key});
@@ -198,7 +198,7 @@ class _UserDataAndPreferencesScreenState
                           nameController.text,
                         );
                         PreferencesService.saveBool(kIsPreferencesSet, true);
-                        context.push(OnBoarding.routeName);
+                        context.push(Root.routeName);
                       }
                     },
                     child: Text(

@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
@@ -98,8 +95,8 @@ class _HomePageViewState extends State<HomePageViewBody>
             ),
           ),
           Positioned(
-            left: 20,
-            top: 300,
+            left: position.dx,
+            top: position.dy,
             child: Material(
               elevation: 4,
               borderRadius: BorderRadius.circular(8),

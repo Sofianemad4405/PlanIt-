@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           darkTheme: AppTheme.dark(context),
           theme: AppTheme.light(context),
           themeMode: context.watch<ThemeCubit>().state,
-          home: const UserDataAndPreferencesScreen(),
+          home: const Splash(),
         );
       },
     );

@@ -2,7 +2,10 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:planitt/app/screens/user_data_and_preferences_screen.dart';
+import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/utils/constants.dart';
+import 'package:planitt/core/utils/extention.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});
@@ -18,14 +21,27 @@ class _OnBoardingState extends State<OnBoarding> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(25),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Center(
+            const Gap(200),
+            Center(
               child: OnBoardingBody(
-                img: "assets/svgs/on_boarding1.svg",
-                text: "Plan your world, one\ntask at a time.",
+                img: currentPage == 0
+                    ? "assets/svgs/on_boarding1.svg"
+                    : currentPage == 1
+                    ? "assets/svgs/on_boarding2.svg"
+                    : currentPage == 2
+                    ? "assets/svgs/on_boarding3.svg"
+                    : "assets/svgs/on_boarding4.svg",
+                text: currentPage == 0
+                    ? "Plan your world, one\ntask at a time."
+                    : currentPage == 1
+                    ? "Stay focused. Stay in\ncontrol."
+                    : currentPage == 2
+                    ? "Turn your ideas into\nachievements."
+                    : "Welcome to PlanIt.",
               ),
             ),
             const Spacer(),
@@ -47,19 +63,33 @@ class _OnBoardingState extends State<OnBoarding> {
                   ),
                 ),
                 const Spacer(),
-                Container(
-                  width: 82.56,
-                  height: 39.99,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(9999),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Next",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (currentPage == 3) {
+                        PreferencesService.saveBool(kIsOnboardingSeen, true);
+                        context.pushAndRemoveUntil(
+                          UserDataAndPreferencesScreen.routeName,
+                        );
+                      } else {
+                        currentPage++;
+                      }
+                    });
+                  },
+                  child: Container(
+                    width: 82.56,
+                    height: 39.99,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      borderRadius: BorderRadius.circular(9999),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Next",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

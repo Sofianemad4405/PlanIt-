@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/theme/app_colors.dart';

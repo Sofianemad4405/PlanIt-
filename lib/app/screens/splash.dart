@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gap/gap.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:planitt/app/screens/on_boarding.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/utils/constants.dart' as Constants;

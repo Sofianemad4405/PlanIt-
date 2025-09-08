@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:planitt/core/theme/app_colors.dart';
 
 class CustomRow extends StatelessWidget {
   const CustomRow({

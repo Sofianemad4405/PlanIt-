@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/features/focus/domain/entities/focus_mode_enum.dart';
 import 'package:planitt/features/focus/presentation/widgets/controller_button.dart';
 

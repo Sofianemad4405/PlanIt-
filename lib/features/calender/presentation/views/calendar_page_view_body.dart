@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
@@ -7,7 +5,6 @@ import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/core/widgets/add_todo_dialog.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
-import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 /// The hove page which hosts the calendar
