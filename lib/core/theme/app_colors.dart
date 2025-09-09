@@ -49,14 +49,14 @@ class DarkMoodAppColors extends AppColors {
   static const Color kMainItemsColor = Color.fromARGB(255, 37, 37, 37);
 
   static List<ColorModel> kProjectIconColors = [
-    ColorModel(AppColors.kProjectIconColor1.value),
-    ColorModel(AppColors.kProjectIconColor2.value),
-    ColorModel(AppColors.kProjectIconColor3.value),
-    ColorModel(AppColors.kProjectIconColor4.value),
-    ColorModel(AppColors.kProjectIconColor5.value),
-    ColorModel(AppColors.kProjectIconColor6.value),
-    ColorModel(AppColors.kProjectIconColor7.value),
-    ColorModel(AppColors.kProjectIconColor8.value),
-    ColorModel(AppColors.kProjectIconColor9.value),
+    ColorModel(AppColors.kProjectIconColor1.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor2.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor3.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor4.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor5.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor6.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor7.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor8.toARGB32()),
+    ColorModel(AppColors.kProjectIconColor9.toARGB32()),
   ];
 }

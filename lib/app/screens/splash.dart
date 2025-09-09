@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:planitt/app/screens/on_boarding.dart';
 import 'package:planitt/core/services/prefs.dart';
-import 'package:planitt/core/utils/constants.dart' as Constants;
+import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/root/root.dart';
 
@@ -43,12 +43,10 @@ class _SplashState extends State<Splash> with TickerProviderStateMixin {
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     Future.delayed(const Duration(seconds: 2), () async {
-      bool onBoardingSeen = await PreferencesService.getBool(
-        Constants.kIsOnboardingSeen,
-      );
-      if (onBoardingSeen) {
+      bool onBoardingSeen = await PreferencesService.getBool(kIsOnboardingSeen);
+      if (onBoardingSeen && mounted) {
         context.push(Root.routeName);
-      } else {
+      } else if (mounted) {
         context.push(OnBoarding.routeName);
       }
     });

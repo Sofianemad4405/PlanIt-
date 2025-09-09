@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,18 +5,15 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
 import 'package:planitt/core/entities/subtask_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/entities/project_entity.dart';
-import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/core/widgets/add_todo_dialog.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/home/presentation/widgets/eidt_data_custom_column.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planitt/features/projects/data/models/project_model.dart';
 
 class TodoEditingDialog extends StatefulWidget {
@@ -496,29 +492,37 @@ class _TodoEditingDialogState extends State<TodoEditingDialog> {
                         // add subtask
                         TextFormField(
                           controller: subtask,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Enter a subtask".tr();
+                            }
+                            return null;
+                          },
                           decoration: InputDecoration(
                             fillColor: Theme.of(context).colorScheme.surface,
                             suffixIcon: BlocBuilder<TodosCubit, TodosState>(
                               builder: (context, state) {
                                 return IconButton(
                                   onPressed: () {
-                                    if (state is TodosLoaded) {
-                                      final todos = state.todos;
-                                      final todo = todos.firstWhere(
-                                        (todo) => todo.key == widget.toDo.key,
-                                      );
-                                      context.read<TodosCubit>().addSubtask(
-                                        todo,
-                                        SubtaskEntity(
-                                          title: subtask.text,
-                                          isCompleted: false,
-                                          index: todo.subtasks!.length,
-                                        ),
-                                      );
-                                      newSubtasks = todo.subtasks!
-                                          .map((e) => e.copyWith())
-                                          .toList();
-                                      subtask.clear();
+                                    if (_formKey.currentState!.validate()) {
+                                      if (state is TodosLoaded) {
+                                        final todos = state.todos;
+                                        final todo = todos.firstWhere(
+                                          (todo) => todo.key == widget.toDo.key,
+                                        );
+                                        context.read<TodosCubit>().addSubtask(
+                                          todo,
+                                          SubtaskEntity(
+                                            title: subtask.text,
+                                            isCompleted: false,
+                                            index: todo.subtasks!.length,
+                                          ),
+                                        );
+                                        newSubtasks = todo.subtasks!
+                                            .map((e) => e.copyWith())
+                                            .toList();
+                                        subtask.clear();
+                                      }
                                     }
                                   },
                                   icon: Icon(

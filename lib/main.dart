@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/app/controllers/theme_controller.dart';
 import 'package:planitt/app/screens/splash.dart';
-import 'package:planitt/app/screens/user_data_and_preferences_screen.dart';
 import 'package:planitt/app/themes/app_theme.dart';
 import 'package:planitt/core/services/app_router.dart';
 import 'package:planitt/core/services/get_it_service.dart';

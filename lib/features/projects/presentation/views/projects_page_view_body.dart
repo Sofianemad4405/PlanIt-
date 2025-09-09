@@ -4,8 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:planitt/core/theme/text_themes.dart';
-import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 import 'package:planitt/features/projects/presentation/views/project_details_Page_view_body.dart';
 import 'package:planitt/features/projects/presentation/views/projects_grid_view.dart';

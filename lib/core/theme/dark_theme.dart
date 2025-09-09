@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:planitt/app/controllers/language_controller.dart';
 import 'package:planitt/core/theme/app_colors.dart';
-import 'package:planitt/core/utils/constants.dart' as Constants;
+import 'package:planitt/core/utils/constants.dart';
 
 ThemeData darkTheme(BuildContext context) => ThemeData(
   fontFamily: LanguageController.getLocale(context).languageCode == "ar"
-      ? Constants.arabicFont
-      : Constants.englishFont,
+      ? arabicFont
+      : englishFont,
   brightness: Brightness.dark,
   primaryColor: Colors.black,
   scaffoldBackgroundColor: DarkMoodAppColors.kScaffoldColor,
@@ -17,7 +17,6 @@ ThemeData darkTheme(BuildContext context) => ThemeData(
     titleLarge: TextStyle(color: Colors.white),
   ),
   fontFamilyFallback: const ["Noto Sans Arabic"],
-  // colorScheme: const ColorScheme.dark(surface: Colors.white),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: DarkMoodAppColors.kButtomNavBar,
     selectedItemColor: DarkMoodAppColors.kSelectedItemColor,

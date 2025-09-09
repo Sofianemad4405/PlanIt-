@@ -29,9 +29,9 @@ class PreferencesService {
     await prefs.setInt(key, value);
   }
 
-  static Future<int> getInt(String key) async {
+  static Future<int?> getInt(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(key) ?? 0;
+    return prefs.getInt(key);
   }
 
   //bools

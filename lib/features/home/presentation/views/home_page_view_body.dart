@@ -28,7 +28,7 @@ class _HomePageViewState extends State<HomePageViewBody>
     with TickerProviderStateMixin {
   late TabController _tabController;
   late AnimationController _controller;
-  late Animation<Offset> _offsetAnimation;
+  late Animation<double> _fadeAnimation;
   TextEditingController query = TextEditingController();
   late Timer _timer;
   String userArabicName = "";
@@ -49,15 +49,19 @@ class _HomePageViewState extends State<HomePageViewBody>
       vsync: this,
     );
 
-    _offsetAnimation =
-        Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: Curves.fastEaseInToSlowEaseOut,
-          ),
-        );
+    // _offsetAnimation =
+    //     Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
+    //       CurvedAnimation(
+    //         parent: _controller,
+    //         curve: Curves.fastEaseInToSlowEaseOut,
+    //       ),
+    //     );
 
-    _controller.forward();
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.forward();
+    });
     context.read<TodosCubit>().init();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
@@ -243,179 +247,175 @@ class _HomePageViewState extends State<HomePageViewBody>
 
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: _offsetAnimation,
-      child: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LanguageController.getLocale(context).languageCode == "ar"
-                          ? "${getGreeting()}، $userArabicName"
-                          : "${getGreeting()}, $userEnglishName",
-                      style: Theme.of(context).textTheme.headlineMedium!
-                          .copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 20,
-                          ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      DateFormat(
-                        'EEEE، d MMMM',
-                        context.locale.toString(),
-                      ).format(DateTime.now()),
-                      style: const TextStyle(
-                        color: DarkMoodAppColors.kUnSelectedItemColor,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const Gap(10),
-                    BlocBuilder<TodosCubit, TodosState>(
-                      builder: (context, state) {
-                        if (state is TodosLoaded) {
-                          final todos = state.todos.where((todo) {
-                            return todo.isOverdue && !todo.isFinished;
-                          }).toList();
-                          return todos.isNotEmpty
-                              ? Text(
-                                  "${todos.length} ${"overdue tasks".tr()}",
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              : const SizedBox();
-                        }
-                        return const SizedBox();
-                      },
-                    ),
-                    const Gap(20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 50,
-                            child: CustomTextField(
-                              controller: query,
-                              onChanged: (value) {
-                                if (value.isEmpty) {
-                                  context.read<TodosCubit>().getAllTodos();
-                                } else {
-                                  context.read<TodosCubit>().searchTodos(value);
-                                }
-                              },
-                              hint: "Search".tr(),
-                              prefixIcon: true,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: _toggleOverlay,
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              color:
-                                  selectedPriorities.isNotEmpty ||
-                                      selectedProjects.isNotEmpty
-                                  ? AppColors.kAddTodoColor
-                                  : Theme.of(
-                                      context,
-                                    ).inputDecorationTheme.fillColor,
-                              borderRadius: BorderRadius.circular(
-                                AppNumbers.kEight,
-                              ),
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                "assets/svgs/filter.svg",
-                                height: 25,
-                                width: 25,
-                                colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.onSurface,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverAppBar(
-              pinned: true,
-              floating: true,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              automaticallyImplyLeading: false,
-              toolbarHeight: 0,
-              bottom: TabBar(
-                dividerColor: Colors.grey[700],
-                controller: _tabController,
-                tabs: [
-                  Tab(text: "Today".tr()),
-                  Tab(text: "Upcoming".tr()),
-                  Tab(text: "All".tr()),
-                ],
-                labelColor: DarkMoodAppColors.kSelectedItemColor,
-                unselectedLabelColor: DarkMoodAppColors.kUnSelectedItemColor,
-                indicatorColor: DarkMoodAppColors.kSelectedItemColor,
-                indicatorWeight: 2,
-              ),
-            ),
-          ];
-        },
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: BlocConsumer<TodosCubit, TodosState>(
-            listener: (context, state) {},
-            builder: (context, state) {
-              final List<ToDoEntity> todayTodos = (state is TodosLoaded)
-                  ? state.todos.where((todo) => todo.isToday).toList()
-                  : [];
-              final List<ToDoEntity> upcomingTodos = state is TodosLoaded
-                  ? state.todos.where((todo) => !todo.isToday).toList()
-                  : [];
-              final List<ToDoEntity> allTodos = state is TodosLoaded
-                  ? state.todos
-                  : [];
-              todayTodos.sort((a, b) {
-                final aIndex = priorities.indexOf(a.priority);
-                final bIndex = priorities.indexOf(b.priority);
-                return bIndex.compareTo(aIndex);
-              });
-              upcomingTodos.sort((a, b) {
-                final aIndex = priorities.indexOf(a.priority);
-                final bIndex = priorities.indexOf(b.priority);
-                return bIndex.compareTo(aIndex);
-              });
-              allTodos.sort((a, b) {
-                final aIndex = priorities.indexOf(a.priority);
-                final bIndex = priorities.indexOf(b.priority);
-                return bIndex.compareTo(aIndex);
-              });
-              return TabBarView(
-                // physics: const NeverScrollableScrollPhysics(),
-                controller: _tabController,
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  todayTodos.isEmpty
-                      ? const NoTasks(text: "No tasks for today")
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                  Text(
+                    LanguageController.getLocale(context).languageCode == "ar"
+                        ? "${getGreeting()}، $userArabicName"
+                        : "${getGreeting()}, $userEnglishName",
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 20,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    DateFormat(
+                      'EEEE، d MMMM',
+                      context.locale.toString(),
+                    ).format(DateTime.now()),
+                    style: const TextStyle(
+                      color: DarkMoodAppColors.kUnSelectedItemColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const Gap(10),
+                  BlocBuilder<TodosCubit, TodosState>(
+                    builder: (context, state) {
+                      if (state is TodosLoaded) {
+                        final todos = state.todos.where((todo) {
+                          return todo.isOverdue && !todo.isFinished;
+                        }).toList();
+                        return todos.isNotEmpty
+                            ? Text(
+                                "${todos.length} ${"overdue tasks".tr()}",
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            : const SizedBox();
+                      }
+                      return const SizedBox();
+                    },
+                  ),
+                  const Gap(20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: CustomTextField(
+                            controller: query,
+                            onChanged: (value) {
+                              if (value.isEmpty) {
+                                context.read<TodosCubit>().getAllTodos();
+                              } else {
+                                context.read<TodosCubit>().searchTodos(value);
+                              }
+                            },
+                            hint: "Search".tr(),
+                            prefixIcon: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: _toggleOverlay,
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color:
+                                selectedPriorities.isNotEmpty ||
+                                    selectedProjects.isNotEmpty
+                                ? AppColors.kAddTodoColor
+                                : Theme.of(
+                                    context,
+                                  ).inputDecorationTheme.fillColor,
+                            borderRadius: BorderRadius.circular(
+                              AppNumbers.kEight,
+                            ),
+                          ),
+                          child: Center(
+                            child: SvgPicture.asset(
+                              "assets/svgs/filter.svg",
+                              height: 25,
+                              width: 25,
+                              colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.onSurface,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverAppBar(
+            pinned: true,
+            floating: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            automaticallyImplyLeading: false,
+            toolbarHeight: 0,
+            bottom: TabBar(
+              dividerColor: Colors.grey[700],
+              controller: _tabController,
+              tabs: [
+                Tab(text: "Today".tr()),
+                Tab(text: "Upcoming".tr()),
+                Tab(text: "All".tr()),
+              ],
+              labelColor: DarkMoodAppColors.kSelectedItemColor,
+              unselectedLabelColor: DarkMoodAppColors.kUnSelectedItemColor,
+              indicatorColor: DarkMoodAppColors.kSelectedItemColor,
+              indicatorWeight: 2,
+            ),
+          ),
+        ];
+      },
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: BlocConsumer<TodosCubit, TodosState>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            final List<ToDoEntity> todayTodos = (state is TodosLoaded)
+                ? state.todos.where((todo) => todo.isToday).toList()
+                : [];
+            final List<ToDoEntity> upcomingTodos = state is TodosLoaded
+                ? state.todos.where((todo) => !todo.isToday).toList()
+                : [];
+            final List<ToDoEntity> allTodos = state is TodosLoaded
+                ? state.todos
+                : [];
+            todayTodos.sort((a, b) {
+              final aIndex = priorities.indexOf(a.priority);
+              final bIndex = priorities.indexOf(b.priority);
+              return bIndex.compareTo(aIndex);
+            });
+            upcomingTodos.sort((a, b) {
+              final aIndex = priorities.indexOf(a.priority);
+              final bIndex = priorities.indexOf(b.priority);
+              return bIndex.compareTo(aIndex);
+            });
+            allTodos.sort((a, b) {
+              final aIndex = priorities.indexOf(a.priority);
+              final bIndex = priorities.indexOf(b.priority);
+              return bIndex.compareTo(aIndex);
+            });
+            return TabBarView(
+              // physics: const NeverScrollableScrollPhysics(),
+              controller: _tabController,
+              children: [
+                todayTodos.isEmpty
+                    ? const NoTasks(text: "No tasks for today")
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
                           child: TodosListView(
                             todos: todayTodos,
                             onDelete: (todo) {
@@ -430,9 +430,12 @@ class _HomePageViewState extends State<HomePageViewBody>
                             },
                           ),
                         ),
-                  upcomingTodos.isEmpty
-                      ? const NoTasks(text: "No upcoming tasks")
-                      : TodosListView(
+                      ),
+                upcomingTodos.isEmpty
+                    ? const NoTasks(text: "No upcoming tasks")
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TodosListView(
                           todos: upcomingTodos,
                           onDelete: (todo) {
                             context.read<TodosCubit>().deleteTodo(todo);
@@ -446,9 +449,12 @@ class _HomePageViewState extends State<HomePageViewBody>
                             );
                           },
                         ),
-                  allTodos.isEmpty
-                      ? const NoTasks(text: "No tasks added yet")
-                      : TodosListView(
+                      ),
+                allTodos.isEmpty
+                    ? const NoTasks(text: "No tasks added yet")
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TodosListView(
                           todos: allTodos,
                           onDelete: (todo) {
                             context.read<TodosCubit>().deleteTodo(todo);
@@ -461,10 +467,10 @@ class _HomePageViewState extends State<HomePageViewBody>
                             );
                           },
                         ),
-                ],
-              );
-            },
-          ),
+                      ),
+              ],
+            );
+          },
         ),
       ),
     );

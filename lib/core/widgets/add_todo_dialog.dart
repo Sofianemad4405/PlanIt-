@@ -7,6 +7,7 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/core/utils/extention.dart';
@@ -49,6 +50,21 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
     selectedDate = widget.selectedDate;
     createdAt = DateTime.now();
     dueDate = widget.selectedDate;
+    if (context.read<ProjectsCubit>().projects.isNotEmpty) {
+      log("message");
+      log(context.read<ProjectsCubit>().projects.first.name);
+      log(selectedProject?.name ?? "");
+      getLastProject();
+    }
+  }
+
+  Future<void> getLastProject() async {
+    final selectedProjectId = await PreferencesService.getString(kLastProject);
+    log(selectedProjectId);
+    selectedProject = context.read<ProjectsCubit>().projects.firstWhere(
+      (element) => element.id == selectedProjectId,
+    );
+    log("Dofian");
   }
 
   @override
@@ -347,6 +363,10 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                       selectedDate,
                                       createdAt,
                                     ),
+                                  );
+                                  PreferencesService.saveString(
+                                    kLastProject,
+                                    selectedProject!.id,
                                   );
                                   widget.onSaved(toDo);
                                 }

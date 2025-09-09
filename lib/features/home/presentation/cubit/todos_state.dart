@@ -1,7 +1,6 @@
 part of 'todos_cubit.dart';
 
-@immutable
-sealed class TodosState {}
+abstract class TodosState {}
 
 final class TodosInitial extends TodosState {}
 
@@ -25,3 +24,5 @@ final class TodoViewing extends TodosState {
 
 /// حالة نجاح إضافة Todo
 final class TodoAddedSuccess extends TodosState {}
+
+final class TodoDeleting extends TodosState {}

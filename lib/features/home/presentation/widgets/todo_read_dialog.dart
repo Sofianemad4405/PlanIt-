@@ -8,7 +8,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
@@ -28,13 +27,19 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
   Widget build(BuildContext context) {
     return BlocBuilder<TodosCubit, TodosState>(
       builder: (context, state) {
+        if (state is TodoDeleting) {
+          return const Center(child: SizedBox.shrink());
+        }
         if (state is TodosLoaded) {
           if (state.todos.isEmpty) {
             return const SizedBox.shrink();
           }
-          final todo = state.todos.firstWhere(
-            (todo) => todo.key == widget.toDoKey,
-          );
+
+          final matching = state.todos.where((t) => t.key == widget.toDoKey);
+          if (matching.isEmpty) {
+            return const SizedBox.shrink();
+          }
+          final todo = matching.first;
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -117,11 +122,28 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                   visualDensity: VisualDensity.compact,
                                   splashRadius: 18,
                                   onPressed: () async {
-                                    await context.read<TodosCubit>().deleteTodo(
-                                      todo,
-                                    );
-                                    if (mounted) {
-                                      Future.microtask(() => context.pop());
+                                    try {
+                                      await context
+                                          .read<TodosCubit>()
+                                          .deleteTodo(todo);
+                                      if (mounted) {
+                                        Future.microtask(() => context.pop());
+                                      }
+                                    } catch (e) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Error deleting task: ${e.toString()}',
+                                            ),
+                                            backgroundColor: Theme.of(
+                                              context,
+                                            ).colorScheme.error,
+                                          ),
+                                        );
+                                      }
                                     }
                                   },
                                   icon: SvgPicture.asset(

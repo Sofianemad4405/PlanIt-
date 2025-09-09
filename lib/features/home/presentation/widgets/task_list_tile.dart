@@ -1,9 +1,7 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:planitt/core/converters/date_convertors.dart';
@@ -11,7 +9,6 @@ import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_images.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
-import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 
 class TaskListtile extends StatelessWidget {

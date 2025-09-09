@@ -24,7 +24,7 @@ class UserDataAndPreferencesScreen extends StatefulWidget {
 class _UserDataAndPreferencesScreenState
     extends State<UserDataAndPreferencesScreen> {
   String selectedLanguage = "English";
-  bool isNight = false;
+  bool isNight = true;
 
   TextEditingController arabicNameController = TextEditingController();
   TextEditingController englishNameController = TextEditingController();
@@ -285,7 +285,10 @@ class SelectThemeMode extends StatelessWidget {
           children: [
             SvgPicture.asset(
               img,
-              color: Theme.of(context).colorScheme.onSurface,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.onSurface,
+                BlendMode.srcIn,
+              ),
             ),
             Text(text.tr()),
           ],

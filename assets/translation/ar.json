@@ -84,5 +84,7 @@
     "Github":"جيتهاب",
     "Twitter":"تويتر",
     "Follow me":"تابعني",
-    "No Project":"لا يوجد مشروع"
+    "No Project":"لا يوجد مشروع",
+    "Enter a subtask":"أدخل مهمة فرعية",
+    "Add a subtask...":"أضف مهمة فرعية..."
 }

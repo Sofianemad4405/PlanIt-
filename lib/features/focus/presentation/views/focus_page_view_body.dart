@@ -7,7 +7,7 @@ import 'package:gap/gap.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/theme/app_colors.dart';
-import 'package:planitt/core/utils/constants.dart' as Constants;
+import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/features/focus/domain/entities/focus_mode_enum.dart';
 import 'package:planitt/features/focus/presentation/widgets/circular_timer.dart';
 import 'package:planitt/features/focus/presentation/widgets/focus_todo_tile.dart';
@@ -64,8 +64,8 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
   }
 
   Future<void> getTimersValues() async {
-    focusDuration = await PreferencesService.getInt(Constants.focusDurationKey);
-    breakDuration = await PreferencesService.getInt(Constants.breakDurationKey);
+    focusDuration = await PreferencesService.getInt(focusDurationKey) ?? 25;
+    breakDuration = await PreferencesService.getInt(breakDurationKey) ?? 5;
     setState(() {
       duration = focusDuration;
     });
@@ -166,7 +166,7 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
                         duration = focusDuration;
                       });
                       PreferencesService.saveInt(
-                        Constants.focusDurationKey,
+                        focusDurationKey,
                         focusDuration,
                       );
                     },
@@ -175,7 +175,7 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
                         breakDuration = int.parse(value) * 60;
                       });
                       PreferencesService.saveInt(
-                        Constants.breakDurationKey,
+                        focusDurationKey,
                         breakDuration,
                       );
                     },

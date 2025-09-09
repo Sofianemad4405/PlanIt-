@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
-import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/home/presentation/widgets/task_list_tile.dart';
 
 class TodosListView extends StatelessWidget {

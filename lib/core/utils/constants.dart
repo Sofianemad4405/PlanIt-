@@ -1,16 +1,20 @@
 const List<String> priorities = ["Low", "Medium", "High", "Urgent"];
 const List<String> projectsIcons = [
-  "📁",
-  "💼",
-  "🏠",
-  "📚",
-  "💻",
-  "🛍️",
-  "🌍",
-  "🎵",
-  "⭐",
-  "❤️",
-  "☕",
+  "📝", // Notes
+  "📊", // Charts / Reports
+  "📦", // Package / Delivery
+  "🛠️", // Tools / Work
+  "📷", // Camera / Media
+  "🎯", // Target / Goals
+  "✈️", // Travel
+  "⚽", // Sports
+  "🎨", // Art / Design
+  "🧩", // Puzzle / Ideas
+  "🚀", // Startup / Launch
+  "💡", // Ideas / Creativity
+  "🔒", // Security / Private
+  "🕒", // Time / Deadlines
+  "🌱", // Growth / Nature
 ];
 const String todosBoxName = "todos";
 const String projectsBoxName = "projects";
@@ -27,3 +31,4 @@ const List<String> languages = ["English", "العربية"];
 const String userArabicNameKey = "userArabicName";
 const String userEnglishNameKey = "userEnglishName";
 const String kIsPreferencesSet = "is preferences set";
+const String kLastProject = "last project";

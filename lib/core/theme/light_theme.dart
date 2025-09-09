@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:planitt/app/controllers/language_controller.dart';
 import 'package:planitt/core/theme/app_colors.dart';
-import 'package:planitt/core/utils/constants.dart' as Constants;
+import 'package:planitt/core/utils/constants.dart';
 
 ThemeData lightTheme(BuildContext context) => ThemeData(
   fontFamily: LanguageController.getLocale(context).languageCode == "ar"
-      ? Constants.arabicFont
-      : Constants.arabicFont,
+      ? arabicFont
+      : arabicFont,
   brightness: Brightness.light,
   primaryColor: Colors.white,
   scaffoldBackgroundColor: LightMoodAppColors.kBackground,
@@ -24,7 +24,7 @@ ThemeData lightTheme(BuildContext context) => ThemeData(
     bodyMedium: TextStyle(color: Colors.black87),
     titleLarge: TextStyle(color: Colors.black),
   ),
-  fontFamilyFallback: const [Constants.arabicFont],
+  fontFamilyFallback: const [arabicFont],
 
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: LightMoodAppColors.kBottomNav,

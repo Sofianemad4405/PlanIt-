@@ -11,7 +11,6 @@ import 'package:planitt/core/utils/extention.dart';
 import 'package:planitt/core/widgets/save_or_cancel_button.dart';
 import 'package:planitt/core/widgets/task_search_field.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
-import 'package:planitt/features/projects/presentation/widgets/project_container.dart';
 
 class AddNewProjectDialog extends StatefulWidget {
   const AddNewProjectDialog({super.key});
@@ -95,7 +94,7 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
                 SizedBox(
                   height: 100,
                   child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
+                    // physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 6,
@@ -144,7 +143,7 @@ class _AddNewProjectDialogState extends State<AddNewProjectDialog> {
                 ),
                 const Gap(5),
                 SizedBox(
-                  height: 100,
+                  height: 150,
                   child: GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:

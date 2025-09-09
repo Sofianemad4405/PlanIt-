@@ -1,7 +1,5 @@
 import 'dart:developer';
-
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/entities/subtask_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/features/home/domain/repos/home_todos_repo.dart';
@@ -101,6 +99,7 @@ class TodosCubit extends Cubit<TodosState> {
 
   Future<void> deleteTodo(ToDoEntity todo) async {
     try {
+      emit(TodoDeleting());
       await repository.deleteTodo(todo);
       todos = todos.where((e) => e.key != todo.key).toList();
       emit(TodosLoaded(todos: todos));

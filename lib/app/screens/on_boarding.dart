@@ -5,7 +5,6 @@ import 'package:gap/gap.dart';
 import 'package:planitt/app/screens/user_data_and_preferences_screen.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/utils/constants.dart';
-import 'package:planitt/core/utils/constants.dart' as Constants;
 import 'package:planitt/core/utils/extention.dart';
 
 class OnBoarding extends StatefulWidget {
@@ -61,10 +60,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     setState(() {
                       currentPage = 3;
                     });
-                    PreferencesService.saveBool(
-                      Constants.kIsOnboardingSeen,
-                      true,
-                    );
+                    PreferencesService.saveBool(kIsOnboardingSeen, true);
                   },
                   child: Text(
                     "Skip",
@@ -79,10 +75,7 @@ class _OnBoardingState extends State<OnBoarding> {
                   onTap: () {
                     setState(() {
                       if (currentPage == 3) {
-                        PreferencesService.saveBool(
-                          Constants.kIsOnboardingSeen,
-                          true,
-                        );
+                        PreferencesService.saveBool(kIsOnboardingSeen, true);
                         context.pushAndRemoveUntil(
                           UserDataAndPreferencesScreen.routeName,
                         );
