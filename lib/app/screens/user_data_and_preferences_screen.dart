@@ -26,7 +26,8 @@ class _UserDataAndPreferencesScreenState
   String selectedLanguage = "English";
   bool isNight = false;
 
-  TextEditingController nameController = TextEditingController();
+  TextEditingController arabicNameController = TextEditingController();
+  TextEditingController englishNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -37,182 +38,216 @@ class _UserDataAndPreferencesScreenState
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Column(
-                    children: [
-                      const Gap(120),
-                      SvgPicture.asset(
-                        "assets/svgs/logo.svg",
-                        colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.onSurface,
-                          BlendMode.srcIn,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Column(
+                      children: [
+                        const Gap(120),
+                        SvgPicture.asset(
+                          "assets/svgs/logo.svg",
+                          colorFilter: ColorFilter.mode(
+                            Theme.of(context).colorScheme.onSurface,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        Text(
+                          "PlanIt",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(30),
+                  Text(
+                    "Your name (In Arabic)".tr(),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Gap(10),
+                  CustomTextField(
+                    hint: "Enter your name".tr(),
+                    prefixIcon: false,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Please enter your name".tr();
+                      }
+
+                      return null;
+                    },
+                    controller: arabicNameController,
+                  ),
+                  const Gap(30),
+                  Text(
+                    "Your name (In English)".tr(),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Gap(10),
+                  CustomTextField(
+                    hint: "Enter your name",
+                    prefixIcon: false,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter your first name";
+                      }
+                      if (value.trim().contains(" ")) {
+                        return "Only first name is allowed";
+                      }
+                      return null;
+                    },
+                    controller: englishNameController,
+                  ),
+                  const Gap(30),
+                  Text(
+                    "Language".tr(),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Gap(10),
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedLanguage,
+                    icon: SvgPicture.asset(
+                      "assets/svgs/language.svg",
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppNumbers.kEight),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          width: 0.05,
                         ),
                       ),
-                      Text(
-                        "PlanIt",
-                        style: TextStyle(
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppNumbers.kEight),
+                        borderSide: BorderSide(
                           color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
+                          width: 0.05,
                         ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          width: 0.05,
+                        ),
+                      ),
+                    ),
+                    items: languages.map((l) {
+                      return DropdownMenuItem(value: l, child: Text(l));
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedLanguage = value!;
+                      });
+                      LanguageController.changeLanguage(
+                        context,
+                        selectedLanguage == "English"
+                            ? const Locale("en")
+                            : const Locale("ar"),
+                      );
+                    },
+                  ),
+                  const Gap(30),
+                  Text(
+                    "Theme".tr(),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Gap(20),
+                  Row(
+                    children: [
+                      SelectThemeMode(
+                        img: 'assets/svgs/light.svg',
+                        text: 'Light'.tr(),
+                        onTap: () {
+                          setState(() {
+                            isNight = false;
+                          });
+                          context.read<ThemeCubit>().setTheme(ThemeMode.light);
+                        },
+                        isSelected: !isNight,
+                      ),
+                      const Gap(20),
+                      SelectThemeMode(
+                        img: "assets/svgs/night.svg",
+                        text: "Night".tr(),
+                        onTap: () {
+                          setState(() {
+                            isNight = true;
+                          });
+                          context.read<ThemeCubit>().setTheme(ThemeMode.dark);
+                        },
+                        isSelected: isNight,
                       ),
                     ],
                   ),
-                ),
-                const Gap(30),
-                Text(
-                  "Your name".tr(),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const Gap(10),
-                CustomTextField(
-                  hint: "Enter your name".tr(),
-                  prefixIcon: false,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Please enter your name".tr();
-                    }
-                    return null;
-                  },
-                  controller: nameController,
-                ),
-                const Gap(30),
-                Text(
-                  "Language".tr(),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const Gap(10),
-                DropdownButtonFormField<String>(
-                  initialValue: selectedLanguage,
-                  icon: SvgPicture.asset(
-                    "assets/svgs/language.svg",
-                    colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.onSurface,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppNumbers.kEight),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        width: 0.05,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppNumbers.kEight),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        width: 0.05,
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        width: 0.05,
-                      ),
-                    ),
-                  ),
-                  items: languages.map((l) {
-                    return DropdownMenuItem(value: l, child: Text(l));
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedLanguage = value!;
-                    });
-                    LanguageController.changeLanguage(
-                      context,
-                      selectedLanguage == "English"
-                          ? const Locale("en")
-                          : const Locale("ar"),
-                    );
-                  },
-                ),
-                const Gap(30),
-                Text(
-                  "Theme".tr(),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const Gap(20),
-                Row(
-                  children: [
-                    SelectThemeMode(
-                      img: 'assets/svgs/light.svg',
-                      text: 'Light'.tr(),
-                      onTap: () {
-                        setState(() {
-                          isNight = false;
-                        });
-                        context.read<ThemeCubit>().setTheme(ThemeMode.light);
-                      },
-                      isSelected: !isNight,
-                    ),
-                    const Gap(20),
-                    SelectThemeMode(
-                      img: "assets/svgs/night.svg",
-                      text: "Night".tr(),
-                      onTap: () {
-                        setState(() {
-                          isNight = true;
-                        });
-                        context.read<ThemeCubit>().setTheme(ThemeMode.dark);
-                      },
-                      isSelected: isNight,
-                    ),
-                  ],
-                ),
-                const Gap(50),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          context.read<ThemeCubit>().theme == ThemeMode.dark
-                          ? Theme.of(context).inputDecorationTheme.fillColor
-                          : Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppNumbers.kEight),
-                      ),
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        PreferencesService.saveString(
-                          userNameKey,
-                          nameController.text,
-                        );
-                        PreferencesService.saveBool(kIsPreferencesSet, true);
-                        context.push(Root.routeName);
-                      }
-                    },
-                    child: Text(
-                      "Next".tr(),
-                      style: TextStyle(
-                        color:
+                  const Gap(50),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
                             context.read<ThemeCubit>().theme == ThemeMode.dark
-                            ? Theme.of(context).colorScheme.onSurface
-                            : Colors.white,
+                            ? Theme.of(context).inputDecorationTheme.fillColor
+                            : Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppNumbers.kEight,
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          PreferencesService.saveString(
+                            userArabicNameKey,
+                            arabicNameController.text,
+                          );
+                          PreferencesService.saveString(
+                            userEnglishNameKey,
+                            englishNameController.text,
+                          );
+                          PreferencesService.saveBool(kIsPreferencesSet, true);
+                          context.pushAndRemoveUntil(Root.routeName);
+                        }
+                      },
+                      child: Text(
+                        "Next".tr(),
+                        style: TextStyle(
+                          color:
+                              context.read<ThemeCubit>().theme == ThemeMode.dark
+                              ? Theme.of(context).colorScheme.onSurface
+                              : Colors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

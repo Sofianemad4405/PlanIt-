@@ -1,6 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
@@ -10,6 +11,8 @@ import 'package:planitt/core/entities/to_do_entity.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_images.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
+import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
+import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 
 class TaskListtile extends StatelessWidget {
   const TaskListtile({
@@ -17,13 +20,10 @@ class TaskListtile extends StatelessWidget {
     required this.toDo,
     required this.onDelete,
     required this.onTileTab,
-    required this.onTaskCompleted,
   });
   final ToDoEntity toDo;
   final VoidCallback onDelete;
   final VoidCallback onTileTab;
-  final VoidCallback onTaskCompleted;
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -35,22 +35,22 @@ class TaskListtile extends StatelessWidget {
         alignment: Alignment.centerRight,
         color: Colors.red,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(Iconsax.trash, color: Colors.white),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
       onDismissed: (direction) {
         onDelete();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            duration: Duration(milliseconds: 100),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            content: AwesomeSnackbarContent(
-              title: 'Deleted!',
-              message: 'Your task was removed successfully.',
-              contentType: ContentType.success,
-            ),
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //     duration: Duration(milliseconds: 100),
+        //     backgroundColor: Colors.transparent,
+        //     elevation: 0,
+        //     content: AwesomeSnackbarContent(
+        //       title: 'Deleted!',
+        //       message: 'Your task was removed successfully.',
+        //       contentType: ContentType.success,
+        //     ),
+        //   ),
+        // );
       },
       child: ListTile(
         onTap: () => onTileTab(),
@@ -59,7 +59,6 @@ class TaskListtile extends StatelessWidget {
         title: Text(
           toDo.title,
           style: TextStyle(
-            decoration: toDo.isFinished ? TextDecoration.lineThrough : null,
             color: toDo.isToday
                 ? AppColors.kRedColor
                 : Theme.of(context).colorScheme.onSurface,
@@ -88,7 +87,12 @@ class TaskListtile extends StatelessWidget {
                       minWidth: 0,
                     ),
                     child: Text(
-                      toDo.project?.name ?? "No Project",
+                      (toDo.project != null &&
+                              context.read<ProjectsCubit>().projects.any(
+                                (p) => p.id == toDo.project!.id,
+                              ))
+                          ? toDo.project!.name
+                          : "No Project".tr(),
                       style: TextStyle(
                         decoration: toDo.isFinished
                             ? TextDecoration.lineThrough
@@ -158,7 +162,7 @@ class TaskListtile extends StatelessWidget {
         ),
         leading: GestureDetector(
           onTap: () {
-            onTaskCompleted();
+            onDelete();
           },
           child: toDo.isFinished
               ? const Icon(Iconsax.tick_circle5, color: Colors.green)

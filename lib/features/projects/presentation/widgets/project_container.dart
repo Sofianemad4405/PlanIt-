@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
+import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
 
 class ProjectContainer extends StatelessWidget {
@@ -60,6 +61,7 @@ class ProjectContainer extends StatelessWidget {
                   onSelected: (value) {
                     if (value == 'delete') {
                       context.read<ProjectsCubit>().deleteProject(project);
+                      context.read<TodosCubit>().deleteProjectTodos(project.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           duration: Duration(milliseconds: 500),

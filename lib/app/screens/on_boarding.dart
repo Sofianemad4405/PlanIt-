@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:planitt/app/screens/user_data_and_preferences_screen.dart';
 import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/utils/constants.dart';
+import 'package:planitt/core/utils/constants.dart' as Constants;
 import 'package:planitt/core/utils/extention.dart';
 
 class OnBoarding extends StatefulWidget {
@@ -55,11 +56,22 @@ class _OnBoardingState extends State<OnBoarding> {
             ),
             Row(
               children: [
-                Text(
-                  "Skip",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      currentPage = 3;
+                    });
+                    PreferencesService.saveBool(
+                      Constants.kIsOnboardingSeen,
+                      true,
+                    );
+                  },
+                  child: Text(
+                    "Skip",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -67,7 +79,10 @@ class _OnBoardingState extends State<OnBoarding> {
                   onTap: () {
                     setState(() {
                       if (currentPage == 3) {
-                        PreferencesService.saveBool(kIsOnboardingSeen, true);
+                        PreferencesService.saveBool(
+                          Constants.kIsOnboardingSeen,
+                          true,
+                        );
                         context.pushAndRemoveUntil(
                           UserDataAndPreferencesScreen.routeName,
                         );
@@ -77,19 +92,19 @@ class _OnBoardingState extends State<OnBoarding> {
                     });
                   },
                   child: Container(
-                    width: 82.56,
-                    height: 39.99,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.onSurface,
                       borderRadius: BorderRadius.circular(9999),
                     ),
-                    child: Center(
-                      child: Text(
-                        "Next",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.surface,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    child: Text(
+                      currentPage == 3 ? "Get Started" : "Next",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

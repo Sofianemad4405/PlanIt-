@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/home/presentation/widgets/task_list_tile.dart';
 
 class TodosListView extends StatelessWidget {
@@ -8,13 +10,11 @@ class TodosListView extends StatelessWidget {
     required this.todos,
     required this.onDelete,
     required this.onTileTab,
-    required this.onTaskCompleted,
   });
 
   final List<ToDoEntity> todos;
   final Function(ToDoEntity) onDelete;
   final Function(ToDoEntity) onTileTab;
-  final Function(ToDoEntity) onTaskCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,6 @@ class TodosListView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: TaskListtile(
-              onTaskCompleted: () => onTaskCompleted(todo),
               toDo: todo,
               onDelete: () => onDelete(todo),
               onTileTab: () => onTileTab(todo),

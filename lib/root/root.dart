@@ -18,7 +18,7 @@ import 'package:planitt/features/projects/presentation/views/projects_page_view_
 
 class Root extends StatefulWidget {
   const Root({super.key});
-  static const String routeName = kOnBoardingRoute;
+  static const String routeName = kRootRoute;
 
   @override
   State<Root> createState() => _RootState();

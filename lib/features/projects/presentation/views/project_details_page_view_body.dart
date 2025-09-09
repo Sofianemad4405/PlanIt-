@@ -65,9 +65,9 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPageViewBody> {
                   Container(
                     height: 40,
                     width: 40,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 101, 113, 133),
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
                     ),
                     child: Center(
                       child: Text(
@@ -119,6 +119,7 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPageViewBody> {
                                   context
                                       .read<ProjectsCubit>()
                                       .loadProjectsTodos(widget.project);
+                                  context.pop();
                                 },
                                 selectedProject: widget.project,
                               );
@@ -179,9 +180,12 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPageViewBody> {
                           child: TaskListtile(
                             toDo: state.project.todos[index],
                             onDelete: () {
-                              // context.read<TodosCubit>().deleteTodo(
-                              //   todos[index],
-                              // );
+                              context.read<TodosCubit>().deleteTodo(
+                                state.project.todos[index],
+                              );
+                              context.read<ProjectsCubit>().loadProjectsTodos(
+                                state.project,
+                              );
                             },
                             onTileTab: () {
                               try {
@@ -196,17 +200,6 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPageViewBody> {
                               } catch (e) {
                                 log(e.toString());
                               }
-                            },
-                            onTaskCompleted: () {
-                              final newTodo = state.project.todos[index]
-                                  .copyWith(
-                                    isFinished:
-                                        !state.project.todos[index].isFinished,
-                                  );
-                              context.read<TodosCubit>().updateTodo(
-                                state.project.todos[index].key,
-                                newTodo,
-                              );
                             },
                           ),
                         );

@@ -29,6 +29,9 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
     return BlocBuilder<TodosCubit, TodosState>(
       builder: (context, state) {
         if (state is TodosLoaded) {
+          if (state.todos.isEmpty) {
+            return const SizedBox.shrink();
+          }
           final todo = state.todos.firstWhere(
             (todo) => todo.key == widget.toDoKey,
           );
@@ -117,6 +120,9 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                     await context.read<TodosCubit>().deleteTodo(
                                       todo,
                                     );
+                                    if (mounted) {
+                                      Future.microtask(() => context.pop());
+                                    }
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/svgs/trash.svg",
@@ -195,13 +201,13 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                     data: Container(
                                       decoration: BoxDecoration(
                                         color: todo.priority == "High"
-                                            ? const Color(0xFF943211)
+                                            ? AppColors.kHighPriorityColor
                                             : todo.priority == "Medium"
-                                            ? const Color(0xFF1D3DA8)
+                                            ? AppColors.kMediumPriorityColor
                                             : todo.priority == "Low"
-                                            ? const Color(0xFF353E4E)
+                                            ? AppColors.kLowPriorityColor
                                             : todo.priority == "Urgent"
-                                            ? const Color(0xFF931A1A)
+                                            ? AppColors.kUrgentPriorityColor
                                             : Colors.transparent,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
@@ -219,7 +225,15 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                         ),
                                       ),
                                     ),
-                                    icon: Iconsax.flag,
+                                    icon: todo.priority == "Low"
+                                        ? Iconsax.star
+                                        : todo.priority == "Medium"
+                                        ? Iconsax.star_1
+                                        : todo.priority == "High"
+                                        ? Iconsax.magic_star
+                                        : todo.priority == "Urgent"
+                                        ? Iconsax.medal_star4
+                                        : Iconsax.star,
                                   ),
                                 ),
                               ],
@@ -267,7 +281,7 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                         ),
                                       ),
                                     ),
-                                    icon: Iconsax.folder_24,
+                                    icon: Iconsax.flag,
                                   ),
                                 ),
                                 const Spacer(),
@@ -329,6 +343,10 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                 itemCount: todo.subtasks!.length,
                                 itemBuilder: (context, index) {
                                   final subtask = todo.subtasks![index];
+                                  if (todo.subtasks == null ||
+                                      todo.subtasks!.isEmpty) {
+                                    return const Text("No subtasks");
+                                  }
                                   return SizedBox(
                                     height: 40,
                                     child: Row(
@@ -372,6 +390,7 @@ class _TodoReadDialogState extends State<TodoReadDialog> {
                                             context
                                                 .read<TodosCubit>()
                                                 .deleteSubtask(todo, subtask);
+                                            context.pop();
                                           },
                                         ),
                                       ],

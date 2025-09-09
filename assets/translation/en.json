@@ -24,7 +24,7 @@
     "Delete":"Delete",
     "New Project":"+  New Project",
     "Add New Project":"Add New Project",
-    "Project Name":"Project Name",
+    "Project name":"Project name",
     "Project Icon":"Project Icon",
     "Project Color":"Project Color",
     "Add Project":"Add Project",
@@ -80,6 +80,12 @@
     "Your name":"Your name",
     "Next":"Next",
     "Please enter your name":"Please enter your name",
-    "Skip":"Skip"
+    "Skip":"Skip",
+    "Your name (In Arabic)":"Your name (In Arabic)",
+    "Your name (In English)":"Your name (In English)",
+    "Github":"Github",
+    "Twitter":"Twitter",
+    "Follow me":"Follow me",
+    "No Project":"No Project"
 }
   

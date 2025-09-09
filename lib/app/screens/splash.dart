@@ -25,7 +25,7 @@ class _SplashState extends State<Splash> with TickerProviderStateMixin {
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3), // حركة كل دورة
+      duration: const Duration(seconds: 3),
     )..repeat();
 
     // كل لاير يطلع بسرعة مختلفة
@@ -50,7 +50,6 @@ class _SplashState extends State<Splash> with TickerProviderStateMixin {
         context.push(Root.routeName);
       } else {
         context.push(OnBoarding.routeName);
-        PreferencesService.saveBool(Constants.kIsOnboardingSeen, true);
       }
     });
   }

@@ -9,7 +9,6 @@ import 'package:planitt/core/services/get_it_service.dart';
 import 'package:planitt/core/services/hive_storage_service.dart';
 import 'package:planitt/features/home/presentation/cubit/todos_cubit.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
-import 'package:planitt/root/root.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 Future<void> main() async {

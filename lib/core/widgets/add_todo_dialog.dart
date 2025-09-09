@@ -38,6 +38,8 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   ProjectEntity? selectedProject;
+  late DateTime createdAt;
+  late DateTime dueDate;
 
   @override
   void initState() {
@@ -45,6 +47,8 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
     selectedProject = widget.selectedProject;
     log(selectedProject?.name ?? "");
     selectedDate = widget.selectedDate;
+    createdAt = DateTime.now();
+    dueDate = widget.selectedDate;
   }
 
   @override
@@ -144,10 +148,25 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                             Flexible(
                               child: Row(
                                 children: [
-                                  const Icon(
-                                    Iconsax.star,
-                                    color:
-                                        DarkMoodAppColors.kUnSelectedItemColor,
+                                  Icon(
+                                    color: selectedPriority == "Low"
+                                        ? AppColors.kLowPriorityColor
+                                        : selectedPriority == "Medium"
+                                        ? AppColors.kMediumPriorityColor
+                                        : selectedPriority == "High"
+                                        ? AppColors.kHighPriorityColor
+                                        : selectedPriority == "Urgent"
+                                        ? AppColors.kUrgentPriorityColor
+                                        : AppColors.kAddTodoColor,
+                                    selectedPriority == "Low"
+                                        ? Iconsax.star
+                                        : selectedPriority == "Medium"
+                                        ? Iconsax.star_1
+                                        : selectedPriority == "High"
+                                        ? Iconsax.magic_star
+                                        : selectedPriority == "Urgent"
+                                        ? Iconsax.medal_star4
+                                        : Iconsax.star,
                                   ),
                                   const Gap(5),
                                   Flexible(
@@ -314,23 +333,19 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                         descriptionController.text.isEmpty
                                         ? null
                                         : descriptionController.text,
-                                    createdAt: DateTime.now(),
+                                    createdAt: createdAt,
                                     dueDate: selectedDate,
                                     subtasks: [],
                                     priority: selectedPriority,
                                     project: selectedProject,
-                                    isToday: isSameDay(
-                                      selectedDate,
-                                      DateTime.now(),
-                                    ),
+                                    isToday: isSameDay(selectedDate, createdAt),
                                     isTomorrow: isSameDay(
                                       selectedDate,
-                                      DateTime.now().add(
-                                        const Duration(days: 1),
-                                      ),
+                                      createdAt.add(const Duration(days: 1)),
                                     ),
-                                    isOverdue: selectedDate.isBefore(
-                                      DateTime.now(),
+                                    isOverdue: isBeforeByDay(
+                                      selectedDate,
+                                      createdAt,
                                     ),
                                   );
                                   widget.onSaved(toDo);
@@ -354,4 +369,10 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
 
 bool isSameDay(DateTime d1, DateTime d2) {
   return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
+}
+
+bool isBeforeByDay(DateTime selectedDate, DateTime createdAt) {
+  final s = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+  final c = DateTime(createdAt.year, createdAt.month, createdAt.day);
+  return s.isBefore(c);
 }

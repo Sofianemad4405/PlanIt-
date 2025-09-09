@@ -200,88 +200,103 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
                 const Gap(20),
                 Visibility(
                   visible: isFocusing,
-                  child: Container(
-                    height: 159.95,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxW = constraints.maxWidth.clamp(280.0, 560.0);
+                      final maxH = constraints.maxHeight.clamp(
+                        200.0,
+                        MediaQuery.of(context).size.height * 0.5,
+                      );
+                      return Container(
+                        width: maxW,
+                        height: maxH * .5,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
                             children: [
-                              Text(
-                                "Current Focus Task".tr(),
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Current Focus Task".tr(),
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        isFocusing = false;
+                                      });
+                                      currentTodo = null;
+                                    },
+                                    child: Text(
+                                      "Change".tr(),
+                                      style: const TextStyle(
+                                        color: AppColors.kMediumPriorityColor,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Spacer(),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    isFocusing = false;
-                                  });
-                                  currentTodo = null;
-                                },
-                                child: Text(
-                                  "Change".tr(),
-                                  style: const TextStyle(
-                                    color: AppColors.kMediumPriorityColor,
-                                    fontWeight: FontWeight.w400,
+                              const Gap(10),
+                              Container(
+                                height: maxH * .3,
+                                width: maxW,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[1000],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        currentTodo?.title ?? "",
+                                        style: TextStyle(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const Gap(10),
+                                      Flexible(
+                                        child: Text(
+                                          currentTodo?.description ??
+                                              "No description".tr(),
+                                          style: TextStyle(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          maxLines: 4,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const Gap(10),
-                          Container(
-                            height: 91.99,
-                            width: 294.03,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[1000],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    currentTodo?.title ?? "",
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Gap(10),
-                                  Text(
-                                    currentTodo?.description ??
-                                        "No description".tr(),
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 const Gap(20),
@@ -338,7 +353,7 @@ class _FocusPageViewBodyState extends State<FocusPageViewBody>
                                 countDownController.pause();
                                 isTimerRunning = false;
                               },
-                              isFocusing: isFocusing,
+                              isFocusing: currentTodo?.key == todo.key,
                             ),
                           );
                         },

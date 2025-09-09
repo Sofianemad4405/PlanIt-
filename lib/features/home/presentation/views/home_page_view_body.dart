@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:planitt/app/controllers/language_controller.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
+import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/theme/app_numbers.dart';
 import 'package:planitt/core/utils/constants.dart';
@@ -29,10 +31,14 @@ class _HomePageViewState extends State<HomePageViewBody>
   late Animation<Offset> _offsetAnimation;
   TextEditingController query = TextEditingController();
   late Timer _timer;
+  String userArabicName = "";
+  String userEnglishName = "";
 
   @override
   void initState() {
     super.initState();
+    getUserArabicName();
+    getUserEnglishName();
     _tabController = TabController(
       length: 3,
       vsync: this,
@@ -56,6 +62,14 @@ class _HomePageViewState extends State<HomePageViewBody>
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
+  }
+
+  Future<void> getUserArabicName() async {
+    userArabicName = await PreferencesService.getString(userArabicNameKey);
+  }
+
+  Future<void> getUserEnglishName() async {
+    userEnglishName = await PreferencesService.getString(userEnglishNameKey);
   }
 
   @override
@@ -244,11 +258,14 @@ class _HomePageViewState extends State<HomePageViewBody>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      getGreeting(),
+                      LanguageController.getLocale(context).languageCode == "ar"
+                          ? "${getGreeting()}، $userArabicName"
+                          : "${getGreeting()}, $userEnglishName",
                       style: Theme.of(context).textTheme.headlineMedium!
                           .copyWith(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 20,
                           ),
                     ),
                     const SizedBox(height: 10),
@@ -392,32 +409,26 @@ class _HomePageViewState extends State<HomePageViewBody>
                 return bIndex.compareTo(aIndex);
               });
               return TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
+                // physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
                   todayTodos.isEmpty
                       ? const NoTasks(text: "No tasks for today")
-                      : TodosListView(
-                          todos: todayTodos,
-                          onDelete: (todo) {
-                            context.read<TodosCubit>().deleteTodo(todo);
-                          },
-                          onTileTab: (todo) {
-                            showDialog(
-                              context: context,
-                              builder: (context) =>
-                                  TodoReadDialog(toDoKey: todo.key),
-                            );
-                          },
-                          onTaskCompleted: (todo) {
-                            final newTodo = todo.copyWith(
-                              isFinished: !todo.isFinished,
-                            );
-                            context.read<TodosCubit>().updateTodo(
-                              todo.key,
-                              newTodo,
-                            );
-                          },
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: TodosListView(
+                            todos: todayTodos,
+                            onDelete: (todo) {
+                              context.read<TodosCubit>().deleteTodo(todo);
+                            },
+                            onTileTab: (todo) {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    TodoReadDialog(toDoKey: todo.key),
+                              );
+                            },
+                          ),
                         ),
                   upcomingTodos.isEmpty
                       ? const NoTasks(text: "No upcoming tasks")
@@ -434,15 +445,6 @@ class _HomePageViewState extends State<HomePageViewBody>
                                   TodoReadDialog(toDoKey: todo.key),
                             );
                           },
-                          onTaskCompleted: (todo) {
-                            final newTodo = todo.copyWith(
-                              isFinished: !todo.isFinished,
-                            );
-                            context.read<TodosCubit>().updateTodo(
-                              todo.key,
-                              newTodo,
-                            );
-                          },
                         ),
                   allTodos.isEmpty
                       ? const NoTasks(text: "No tasks added yet")
@@ -456,15 +458,6 @@ class _HomePageViewState extends State<HomePageViewBody>
                               context: context,
                               builder: (context) =>
                                   TodoReadDialog(toDoKey: todo.key),
-                            );
-                          },
-                          onTaskCompleted: (todo) {
-                            final newTodo = todo.copyWith(
-                              isFinished: !todo.isFinished,
-                            );
-                            context.read<TodosCubit>().updateTodo(
-                              todo.key,
-                              newTodo,
                             );
                           },
                         ),

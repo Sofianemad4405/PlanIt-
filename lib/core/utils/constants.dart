@@ -24,5 +24,6 @@ const String kOnBoardingRoute = "on boarding";
 const String kRootRoute = "root";
 const String kUserDataAndPreferencesScreen = "UserDataAndPreferencesScreen";
 const List<String> languages = ["English", "العربية"];
-const String userNameKey = "userName";
+const String userArabicNameKey = "userArabicName";
+const String userEnglishNameKey = "userEnglishName";
 const String kIsPreferencesSet = "is preferences set";

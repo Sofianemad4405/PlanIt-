@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:planitt/core/entities/subtask_entity.dart';
@@ -109,7 +111,9 @@ class TodosCubit extends Cubit<TodosState> {
 
   Future<void> deleteProjectTodos(String projectId) async {
     try {
+      log("ytm mas7");
       await repository.deleteProjectTodos(projectId);
+      log("tm mas7");
       todos = todos.where((e) => e.project?.id != projectId).toList();
       emit(TodosLoaded(todos: todos));
     } catch (e) {
