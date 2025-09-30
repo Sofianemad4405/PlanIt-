@@ -70,7 +70,6 @@ It helps you stay productive by organizing tasks, managing projects, and focusin
 
 ## 📸 Screenshots  
 
-Replace each placeholder with your actual screenshots:  
 
 - **Splash Screen**  
   ![Splash Screen](assets/imgs/screenshots/splash.jpg)  
