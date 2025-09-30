@@ -94,9 +94,9 @@ Replace each placeholder with your actual screenshots:
   ![Focus Mode Screen](assets/imgs/screenshots/focus_mode.jpg)  
 
 - **Projects Page**  
-  ![Projects Page](assets/screenshots/projects.jpg)  
+  ![Projects Page](assets/imgs/screenshots/projects.jpg)  
 
 - **Note Details**  
-  ![Projects Page](assets/screenshots/note_details.jpg)  
+  ![Projects Page](assets/imgs/screenshots/note_details.jpg)  
 
 ---
