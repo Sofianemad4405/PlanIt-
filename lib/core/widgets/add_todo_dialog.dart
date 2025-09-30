@@ -46,25 +46,9 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   void initState() {
     super.initState();
     selectedProject = widget.selectedProject;
-    log(selectedProject?.name ?? "");
     selectedDate = widget.selectedDate;
     createdAt = DateTime.now();
     dueDate = widget.selectedDate;
-    if (context.read<ProjectsCubit>().projects.isNotEmpty) {
-      log("message");
-      log(context.read<ProjectsCubit>().projects.first.name);
-      log(selectedProject?.name ?? "");
-      getLastProject();
-    }
-  }
-
-  Future<void> getLastProject() async {
-    final selectedProjectId = await PreferencesService.getString(kLastProject);
-    log(selectedProjectId);
-    selectedProject = context.read<ProjectsCubit>().projects.firstWhere(
-      (element) => element.id == selectedProjectId,
-    );
-    log("Dofian");
   }
 
   @override
@@ -161,7 +145,8 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                         const Gap(10),
                         Row(
                           children: [
-                            Flexible(
+                            // Priority selector
+                            Expanded(
                               child: Row(
                                 children: [
                                   Icon(
@@ -185,30 +170,26 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                         : Iconsax.star,
                                   ),
                                   const Gap(5),
-                                  Flexible(
+                                  Expanded(
                                     child: Container(
                                       height: 35.97,
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color:
-                                              Theme.of(context)
+                                          color: Theme.of(context)
                                                   .inputDecorationTheme
                                                   .enabledBorder
                                                   ?.borderSide
                                                   .color ??
                                               Colors.grey,
                                         ),
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.surface,
+                                        color: Theme.of(context).colorScheme.surface,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: DropdownButtonHideUnderline(
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8),
                                           child: DropdownButton<String>(
+                                            isExpanded: true,
                                             value: selectedPriority,
                                             items: priorities.map((priority) {
                                               return DropdownMenuItem(
@@ -217,17 +198,17 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                                   priority,
                                                   style: TextStyle(
                                                     fontSize: 12,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSurface,
+                                                    color: Theme.of(context).colorScheme.onSurface,
                                                   ),
                                                 ),
                                               );
                                             }).toList(),
                                             onChanged: (value) {
-                                              setState(() {
-                                                selectedPriority = value!;
-                                              });
+                                              if (value != null) {
+                                                setState(() {
+                                                  selectedPriority = value;
+                                                });
+                                              }
                                             },
                                           ),
                                         ),
@@ -252,72 +233,65 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                           .kUnSelectedItemColor,
                                     ),
                                     const Gap(5),
-                                    Flexible(
-                                      child: Container(
-                                        height: 35.97,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color:
-                                                Theme.of(context)
-                                                    .inputDecorationTheme
-                                                    .enabledBorder
-                                                    ?.borderSide
-                                                    .color ??
-                                                Colors.grey,
-                                          ),
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.surface,
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
+                                    Container(
+                                      height: 35.97,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color:
+                                              Theme.of(context)
+                                                  .inputDecorationTheme
+                                                  .enabledBorder
+                                                  ?.borderSide
+                                                  .color ??
+                                              Colors.grey,
                                         ),
-                                        child: DropdownButtonHideUnderline(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                            ),
-                                            child: DropdownButton<ProjectEntity>(
-                                              isExpanded: true,
-                                              value:
-                                                  context
-                                                      .watch<ProjectsCubit>()
-                                                      .projects
-                                                      .contains(selectedProject)
-                                                  ? selectedProject
-                                                  : null,
-                                              items: context
-                                                  .watch<ProjectsCubit>()
-                                                  .projects
-                                                  .map((project) {
-                                                    return DropdownMenuItem(
-                                                      value: project,
-                                                      child: Flexible(
-                                                        child: Text(
-                                                          project.name,
-                                                          style: TextStyle(
-                                                            color:
-                                                                Theme.of(
-                                                                      context,
-                                                                    )
-                                                                    .colorScheme
-                                                                    .onSurface,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                          maxLines: 1,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.surface,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          child: DropdownButton<ProjectEntity>(
+                                            isExpanded: true,
+                                            value:
+                                                context
+                                                    .watch<ProjectsCubit>()
+                                                    .projects
+                                                    .contains(selectedProject)
+                                                ? selectedProject
+                                                : null,
+                                            items: context
+                                                .watch<ProjectsCubit>()
+                                                .projects
+                                                .map((project) {
+                                                  return DropdownMenuItem(
+                                                    value: project,
+                                                    child: Flexible(
+                                                      child: Text(
+                                                        project.name,
+                                                        style: TextStyle(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
+                                                        maxLines: 1,
                                                       ),
-                                                    );
-                                                  })
-                                                  .toList(),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  selectedProject = value!;
-                                                });
-                                              },
-                                            ),
+                                                    ),
+                                                  );
+                                                })
+                                                .toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedProject = value!;
+                                              });
+                                            },
                                           ),
                                         ),
                                       ),
@@ -363,10 +337,6 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                       selectedDate,
                                       createdAt,
                                     ),
-                                  );
-                                  PreferencesService.saveString(
-                                    kLastProject,
-                                    selectedProject!.id,
                                   );
                                   widget.onSaved(toDo);
                                 }

@@ -15,7 +15,6 @@ Future<void> main() async {
 
   await HiveServiceImpl().init();
   await EasyLocalization.ensureInitialized();
-
   setupServiceLocator();
   runApp(
     EasyLocalization(
