@@ -18,3 +18,37 @@ PlanIt is a modern To-Do and Project Management application built with Flutter. 
 * **Framework:** Flutter / Dart
 * **State Management:** Cubit (BLoC)
 * **Local Storage:** Hive (NoSQL)
+
+
+
+## 📸 Screenshots  
+
+
+- **Splash Screen**  
+  ![Splash Screen](assets/imgs/screenshots/splash.jpg)  
+
+- **Home Screen**  
+  ![Home Screen](assets/imgs/screenshots/home.jpg)  
+
+- **Calendar Screen**  
+  ![Calendar Screen](assets/imgs/screenshots/calendar_page.jpg)  
+
+- **Add Todo**  
+  ![Search Screen](assets/imgs/screenshots/addTodo.jpg)  
+
+- **Add Todo To Project**  
+  ![Add Note Screen](assets/imgs/screenshots/add_todo_to_project.jpg)  
+
+- **Edit Todo Screen**  
+  ![Edit Note Screen](assets/imgs/screenshots/edit_todo.jpg)  
+
+- **Focus Mode Screen**  
+  ![Focus Mode Screen](assets/imgs/screenshots/focus_mode.jpg)  
+
+- **Projects Page**  
+  ![Projects Page](assets/imgs/screenshots/projects.jpg)  
+
+- **Note Details**  
+  ![Projects Page](assets/imgs/screenshots/note_details.jpg)  
+
+---
