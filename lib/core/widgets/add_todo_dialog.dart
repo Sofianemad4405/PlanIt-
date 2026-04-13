@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +5,6 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:planitt/core/entities/project_entity.dart';
 import 'package:planitt/core/entities/to_do_entity.dart';
-import 'package:planitt/core/services/prefs.dart';
 import 'package:planitt/core/theme/app_colors.dart';
 import 'package:planitt/core/utils/constants.dart';
 import 'package:planitt/core/utils/extention.dart';
@@ -158,7 +155,7 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                                         ? AppColors.kHighPriorityColor
                                         : selectedPriority == "Urgent"
                                         ? AppColors.kUrgentPriorityColor
-                                        : AppColors.kAddTodoColor,
+                                        : AppColors.kAccent,
                                     selectedPriority == "Low"
                                         ? Iconsax.star
                                         : selectedPriority == "Medium"

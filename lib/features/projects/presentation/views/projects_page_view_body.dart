@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:planitt/features/projects/presentation/cubit/projects_cubit.dart';
-import 'package:planitt/features/projects/presentation/views/project_details_Page_view_body.dart';
+import 'package:planitt/features/projects/presentation/views/project_details_page_view_body.dart';
 import 'package:planitt/features/projects/presentation/views/projects_grid_view.dart';
 import 'package:planitt/features/projects/presentation/widgets/add_new_project.dart';
 import 'package:planitt/features/projects/presentation/widgets/add_new_project_dialog.dart';

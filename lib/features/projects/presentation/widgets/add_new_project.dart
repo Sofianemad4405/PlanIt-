@@ -14,7 +14,7 @@ class AddNewProject extends StatelessWidget {
       height: AppNumbers.kThirtyNine,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppNumbers.kEight),
-        color: AppColors.kAddTodoColor,
+        color: AppColors.kAccent,
       ),
       child: Center(
         child: Text(

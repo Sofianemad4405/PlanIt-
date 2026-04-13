@@ -328,7 +328,7 @@ class _HomePageViewState extends State<HomePageViewBody>
                             color:
                                 selectedPriorities.isNotEmpty ||
                                     selectedProjects.isNotEmpty
-                                ? AppColors.kAddTodoColor
+                                ? AppColors.kAccent
                                 : Theme.of(
                                     context,
                                   ).inputDecorationTheme.fillColor,
